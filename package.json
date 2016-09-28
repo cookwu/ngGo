@@ -1,21 +1,21 @@
 {
   "name": "ng-go",
   "description": "An Angular.js library for reading, parsing, displaying, editing and replaying Go game records",
-  "version": "1.3.1",
-  "homepage": "https://github.com/adambuczynski/ngGo",
+  "version": "1.3.1.1",
+  "homepage": "https://github.com/cookwu/ngGo",
   "author": {
-    "name": "Adam Buczynski",
-    "email": "me@adambuczynski.com",
-    "url": "http://adambuczynski.com/"
+    "name": "Cook Wu",
+    "email": "cookwu@webaker.net",
+    "url": "http://blog.cookwu.com"
   },
   "license": "MIT",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/adambuczynski/ngGo.git"
+    "url": "https://github.com/cookwu/ngGo.git"
   },
   "bugs": {
-    "url": "https://github.com/adambuczynski/ngGo/issues"
+    "url": "https://github.com/cookwu/ngGo/issues"
   },
   "files": [
     "release",

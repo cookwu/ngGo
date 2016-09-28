@@ -1,8 +1,8 @@
 /**
- * ng-go - v1.3.1 - 2-11-2015
- * https://github.com/adambuczynski/ngGo
+ * ng-go - v1.3.1.1 - 28-8-2016
+ * https://github.com/cookwu/ngGo
  *
- * Copyright (c) 2015 Adam Buczynski <me@adambuczynski.com>
+ * Copyright (c) 2016 Cook Wu <cookwu@webaker.net>
  * License: MIT
  */
 (function(window, angular, undefined) {'use strict';
@@ -146,12 +146,12 @@ angular.module('ngGo.Board.Directive', [
 .directive('board', ['$window', 'Board', function($window, Board) {
 
   //Get pixel ratio
-  var pixelRatio = window.pixelRatio || 1;
+  var pixelRatio = window.devicePixelRatio || 1;
 
   /**
    * Helper to create a layer canvas
    */
-  var createLayerCanvas = function(name) {
+  function createLayerCanvas(name) {
 
     //Create canvas element and get context
     var canvas = document.createElement('canvas');
@@ -172,12 +172,12 @@ angular.module('ngGo.Board.Directive', [
     //Append to element now and return context
     this.appendChild(canvas);
     return context;
-  };
+  }
 
   /**
    * Helper to determine draw size
    */
-  var determineDrawSize = function(scope, availableWidth, availableHeight) {
+  function determineDrawSize(scope, availableWidth, availableHeight) {
 
     //Init vars
     var drawWidth, drawHeight, cellSize;
@@ -213,7 +213,7 @@ angular.module('ngGo.Board.Directive', [
 
     //No change
     return false;
-  };
+  }
 
   /**
    * Directive
@@ -452,14 +452,14 @@ angular.module('ngGo.Board.Service', [
     /**
      * Board constructor
      */
-    var Board = function(config) {
+    function Board(config) {
 
       //Initialize board
       this.init();
 
       //Parse config
       this.parseConfig(config || {});
-    };
+    }
 
     /**
      * Initialize board
@@ -1181,7 +1181,7 @@ angular.module('ngGo.Board.Grid.Service', [
   /**
    * Helper to convert a value at given coordinates to an object
    */
-  var toObject = function(x, y, valueKey) {
+  function toObject(x, y, valueKey) {
 
     //Create coordinates object
     var obj = {
@@ -1197,12 +1197,12 @@ angular.module('ngGo.Board.Grid.Service', [
     //Not an object, set value with given value key and return
     obj[valueKey] = this.grid[x][y];
     return obj;
-  };
+  }
 
   /**
    * Constructor
    */
-  var BoardGrid = function(width, height, emptyValue) {
+  function BoardGrid(width, height, emptyValue) {
 
     //Initialize size and grid array
     this.width = 0;
@@ -1219,7 +1219,7 @@ angular.module('ngGo.Board.Grid.Service', [
     if (width || height) {
       this.setSize(width, height);
     }
-  };
+  }
 
   /**
    * Set a value
@@ -1494,7 +1494,7 @@ angular.module('ngGo.Board.GridChanges.Service', [
   /**
    * Helper to subtract sets
    */
-  var setSubtract = function(a, b) {
+  function setSubtract(a, b) {
     var n = [];
     var q;
     for (var i = 0; i < a.length; i++) {
@@ -1510,10 +1510,10 @@ angular.module('ngGo.Board.GridChanges.Service', [
       }
     }
     return n;
-  };
+  }
 
   /**
-   * Game position constructor
+   * Grid changes constructor
    */
   return function() {
 
@@ -1566,7 +1566,7 @@ angular.module('ngGo.Board.Layer.Service', [
   /**
    * Constructor
    */
-  var BoardLayer = function(board, context) {
+  function BoardLayer(board, context) {
 
     //Remember board reference and 2d canvas context
     this.board = board;
@@ -1574,7 +1574,7 @@ angular.module('ngGo.Board.Layer.Service', [
 
     //Initialize grid for board objects
     this.grid = new BoardGrid();
-  };
+  }
 
   /*****************************************************************************
    * Generic grid and object handling
@@ -1786,7 +1786,7 @@ angular.module('ngGo.Board.ShellPattern.Service', [
   /**
    * Helper to draw a shell line
    */
-  var shellLine = function(ctx, x, y, radius, startAngle, endAngle, strokeStyle) {
+  function shellLine(ctx, x, y, radius, startAngle, endAngle, strokeStyle) {
 
     //Initialize
     ctx.shadowBlur = 2;
@@ -1832,7 +1832,7 @@ angular.module('ngGo.Board.ShellPattern.Service', [
     ctx.moveTo(x1, y1);
     ctx.bezierCurveTo(bx1, by1, bx2, by2, x2, y2);
     ctx.stroke();
-  };
+  }
 
   /**
    * Shell pattern drawer
@@ -2190,12 +2190,12 @@ angular.module('ngGo.Board.Theme.Service', [
     /**
      * Board theme constructor
      */
-    var BoardTheme = function(theme) {
+    function BoardTheme(theme) {
 
       //Remember the given instance theme settings and (re)set the theme
       this.instanceTheme = theme;
       this.reset();
-    };
+    }
 
     /**
      * Reset the theme to defaults
@@ -2307,136 +2307,6 @@ angular.module('ngGo.Board.Theme.Service', [
 (function(window, angular, undefined) {'use strict';
 
 /**
- * InvalidDataError :: Error class to handle invalid data.
- */
-
-/**
- * Module definition and dependencies
- */
-angular.module('ngGo.Errors.InvalidDataError.Service', [
-  'ngGo'
-])
-
-/**
- * Factory definition
- */
-.factory('InvalidDataError', ['ngGo', function(ngGo) {
-
-  /**
-   * Define error
-   */
-  var InvalidDataError = function(code) {
-
-    //Set name and message
-    this.code = code;
-    this.name = 'InvalidDataError';
-    this.message = 'Invalid data: ';
-
-    //Append code message
-    switch (code) {
-      case ngGo.error.NO_DATA:
-        this.message += 'no data to process.';
-        break;
-      case ngGo.error.UNKNOWN_DATA:
-        this.message += 'unknown data format.';
-        break;
-      case ngGo.error.INVALID_GIB:
-        this.message += 'unable to parse GIB data.';
-        break;
-      case ngGo.error.INVALID_SGF:
-        this.message += 'unable to parse SGF data.';
-        break;
-      case ngGo.error.INVALID_JGF_JSON:
-        this.message += 'unable to parse JGF data.';
-        break;
-      case ngGo.error.INVALID_JGF_TREE_JSON:
-        this.message += 'unable to parse the JGF tree data.';
-        break;
-      default:
-        this.message += 'unable to parse the data.';
-    }
-  };
-
-  /**
-   * Extend from error class
-   */
-  InvalidDataError.prototype = new Error();
-  InvalidDataError.prototype.constructor = InvalidDataError;
-
-  //Return object
-  return InvalidDataError;
-}]);
-
-})(window, window.angular);
-
-(function(window, angular, undefined) {'use strict';
-
-/**
- * InvalidPositionError :: Error class to handle invalid moves.
- */
-
-/**
- * Module definition and dependencies
- */
-angular.module('ngGo.Errors.InvalidPositionError.Service', [
-  'ngGo'
-])
-
-/**
- * Factory definition
- */
-.factory('InvalidPositionError', ['ngGo', 'StoneColor', function(ngGo, StoneColor) {
-
-  /**
-   * Define error
-   */
-  var InvalidPositionError = function(code, x, y, color) {
-
-    //Set name and message
-    this.code = code;
-    this.name = 'InvalidPositionError';
-    this.message = 'Invalid position detected.';
-
-    //Add position data
-    if (typeof x !== 'undefined' && typeof y !== 'undefined' && typeof color !== 'undefined') {
-      this.message += ' Trying to place a ' + (color === StoneColor.W ? 'white' : 'black') +
-        ' stone on (' + x + ', ' + y + ')';
-    }
-
-    //Append code message
-    switch (code) {
-      case ngGo.error.POSTITION_OUT_OF_BOUNDS:
-        this.message += ', but these coordinates are not on the board.';
-        break;
-      case ngGo.error.POSTITION_ALREADY_HAS_STONE:
-        this.message += ', but there is already a stone on those coordinates.';
-        break;
-      case ngGo.error.POSTITION_IS_SUICIDE:
-        this.message += ', but that would be suicide.';
-        break;
-      case ngGo.error.POSTITION_IS_REPEATING:
-        this.message += ', but this position already occured.';
-        break;
-      default:
-        this.message += '.';
-    }
-  };
-
-  /**
-   * Extend from error class
-   */
-  InvalidPositionError.prototype = new Error();
-  InvalidPositionError.prototype.constructor = InvalidPositionError;
-
-  //Return object
-  return InvalidPositionError;
-}]);
-
-})(window, window.angular);
-
-(function(window, angular, undefined) {'use strict';
-
-/**
  * Game :: This class represents a game record or a game that is being played/edited. The class
  * traverses the move tree nodes and keeps track of the changes between the previous and new game
  * positions. These changes can then be fed to the board, to add or remove stones and markup.
@@ -2507,7 +2377,7 @@ angular.module('ngGo.Game.Service', [
     /**
      * Validate the info we have to make sure the properties exist
      */
-    var validateInfo = function() {
+    function validateInfo() {
 
       //Set board info if not set
       if (!this.info.board) {
@@ -2532,7 +2402,7 @@ angular.module('ngGo.Game.Service', [
       if (typeof this.info.game.handicap === 'undefined') {
         this.info.game.handicap = this.config.defaultHandicap;
       }
-    };
+    }
 
     /*****************************************************************************
      * Node navigation helpers
@@ -2541,7 +2411,7 @@ angular.module('ngGo.Game.Service', [
     /**
      * Navigate to the next node
      */
-    var nextNode = function(i) {
+    function nextNode(i) {
 
       //Check if we have children
       if (this.node.children.length === 0) {
@@ -2570,12 +2440,12 @@ angular.module('ngGo.Game.Service', [
       //Set pointer of current node
       this.node = this.node.children[i];
       return true;
-    };
+    }
 
     /**
      * Navigate to the previous node
      */
-    var previousNode = function() {
+    function previousNode() {
 
       //No parent node?
       if (!this.node.parent) {
@@ -2588,12 +2458,12 @@ angular.module('ngGo.Game.Service', [
       //Set pointer of current node
       this.node = this.node.parent;
       return true;
-    };
+    }
 
     /**
      * Navigate to the first node
      */
-    var firstNode = function() {
+    function firstNode() {
 
       //Reset path
       this.path.reset();
@@ -2604,7 +2474,7 @@ angular.module('ngGo.Game.Service', [
       //Set the initial turn depending on handicap
       //Can be overwritten by game record instructions
       this.setTurn((this.info.game.handicap > 1) ? StoneColor.W : StoneColor.B);
-    };
+    }
 
     /*****************************************************************************
      * Position history helpers
@@ -2613,7 +2483,7 @@ angular.module('ngGo.Game.Service', [
     /**
      * Clear the position history and initialize with a blank position
      */
-    var initializeHistory = function() {
+    function initializeHistory() {
 
       //Already at beginning?
       if (this.history.length === 1) {
@@ -2628,13 +2498,13 @@ angular.module('ngGo.Game.Service', [
       if (this.info.board) {
         this.history[0].setSize(this.info.board.width, this.info.board.height);
       }
-    };
+    }
 
     /**
      * Add position to stack. If position isn't specified current position is
      * cloned and stacked. Pointer of actual position is moved to the new position.
      */
-    var pushPosition = function(newPosition) {
+    function pushPosition(newPosition) {
 
       //Position not given?
       if (!newPosition) {
@@ -2644,12 +2514,12 @@ angular.module('ngGo.Game.Service', [
       //Push
       this.history.push(newPosition);
       return newPosition;
-    };
+    }
 
     /**
      * Remove current position from stack
      */
-    var popPosition = function() {
+    function popPosition() {
 
       //Nothing left?
       if (this.history.length === 0) {
@@ -2658,17 +2528,17 @@ angular.module('ngGo.Game.Service', [
 
       //Get old position
       return this.history.pop();
-    };
+    }
 
     /**
      * Replace the current position in the stack
      */
-    var replacePosition = function(newPosition) {
+    function replacePosition(newPosition) {
       if (newPosition) {
         this.history.pop();
         this.history.push(newPosition);
       }
-    };
+    }
 
     /*****************************************************************************
      * Execution helpers
@@ -2677,7 +2547,7 @@ angular.module('ngGo.Game.Service', [
     /**
      * Execute the current node
      */
-    var executeNode = function() {
+    function executeNode() {
 
       //Remember last selected node if we have a parent
       if (this.node.parent) {
@@ -2727,7 +2597,7 @@ angular.module('ngGo.Game.Service', [
 
       //Push the new position into the history now
       pushPosition.call(this, newPosition);
-    };
+    }
 
     /*****************************************************************************
      * Game class
@@ -2736,7 +2606,7 @@ angular.module('ngGo.Game.Service', [
     /**
      * Constructor
      */
-    var Game = function(data, config) {
+    function Game(data, config) {
 
       //Extend config
       this.config = angular.extend({}, defaultConfig, config || {});
@@ -2762,7 +2632,7 @@ angular.module('ngGo.Game.Service', [
       else {
         this.init();
       }
-    };
+    }
 
     /**
      * Initialize
@@ -3957,14 +3827,14 @@ angular.module('ngGo.Game.Node.Service', [
   /**
    * Helper to convert SGF coordinates
    */
-  var convertCoordinates = function(coords) {
+  function convertCoordinates(coords) {
     return [coords.charCodeAt(0) - aChar, coords.charCodeAt(1) - aChar];
-  };
+  }
 
   /**
    * Helper to construct a coordinates base object
    */
-  var coordinatesObject = function(coords, baseObject) {
+  function coordinatesObject(coords, baseObject) {
     baseObject = baseObject || {};
     if (coords === '' || coords === 'pass') {
       baseObject.pass = true;
@@ -3981,19 +3851,19 @@ angular.module('ngGo.Game.Node.Service', [
       baseObject.y = coords[1] * 1;
     }
     return baseObject;
-  };
+  }
 
   /**
    * Convert a numeric color value (color constant) to a string
    */
-  var toStringColor = function(color) {
+  function toStringColor(color) {
     return (color === StoneColor.B) ? 'B' : (((color === StoneColor.W) ? 'W' : ''));
-  };
+  }
 
   /**
    * Convert a string color value to a numeric color constant
    */
-  var toColorConstant = function(color) {
+  function toColorConstant(color) {
     if (color === 'B') {
       return StoneColor.B;
     }
@@ -4001,7 +3871,7 @@ angular.module('ngGo.Game.Node.Service', [
       return StoneColor.W;
     }
     return StoneColor.E;
-  };
+  }
 
   /*****************************************************************************
    * Helpers for conversion between JGF / KIFU format
@@ -4010,7 +3880,7 @@ angular.module('ngGo.Game.Node.Service', [
   /**
    * Convert move object to JGF format
    */
-  var convertMoveToJgf = function(move) {
+  function convertMoveToJgf(move) {
 
     //Initialize JGF move object and determine color
     var jgfMove = angular.copy(move);
@@ -4038,12 +3908,12 @@ angular.module('ngGo.Game.Node.Service', [
 
     //Return move
     return jgfMove;
-  };
+  }
 
   /**
    * Convert move from JGF format
    */
-  var convertMoveFromJgf = function(move) {
+  function convertMoveFromJgf(move) {
 
     //Prepare color, coordinates
     var color, coords;
@@ -4067,12 +3937,12 @@ angular.module('ngGo.Game.Node.Service', [
     return coordinatesObject(coords, {
       color: toColorConstant(color)
     });
-  };
+  }
 
   /**
    * Convert setup object to JGF format
    */
-  var convertSetupToJgf = function(setup) {
+  function convertSetupToJgf(setup) {
 
     //Initialize variables
     var i, color;
@@ -4097,12 +3967,12 @@ angular.module('ngGo.Game.Node.Service', [
 
     //Return
     return jgfSetup;
-  };
+  }
 
   /**
    * Convert setup from JGF format
    */
-  var convertSetupFromJgf = function(setup) {
+  function convertSetupFromJgf(setup) {
 
     //Initialize variables
     var c, key, color;
@@ -4128,12 +3998,12 @@ angular.module('ngGo.Game.Node.Service', [
 
     //Return
     return gameSetup;
-  };
+  }
 
   /**
    * Convert markup object to JGF format
    */
-  var convertMarkupToJgf = function(markup) {
+  function convertMarkupToJgf(markup) {
 
     //Initialize variables
     var i, type;
@@ -4163,12 +4033,12 @@ angular.module('ngGo.Game.Node.Service', [
 
     //Return
     return jgfMarkup;
-  };
+  }
 
   /**
    * Convert markup from JGF format
    */
-  var convertMarkupFromJgf = function(markup) {
+  function convertMarkupFromJgf(markup) {
 
     //Initialize variables
     var l, type;
@@ -4222,12 +4092,12 @@ angular.module('ngGo.Game.Node.Service', [
 
     //Return
     return gameMarkup;
-  };
+  }
 
   /**
    * Convert turn object to JGF format
    */
-  var convertTurnToJgf = function(turn) {
+  function convertTurnToJgf(turn) {
     switch (turn) {
       case StoneColor.W:
         return 'W';
@@ -4236,12 +4106,12 @@ angular.module('ngGo.Game.Node.Service', [
       default:
         return '';
     }
-  };
+  }
 
   /**
    * Convert turn from JGF format
    */
-  var convertTurnFromJgf = function(turn) {
+  function convertTurnFromJgf(turn) {
     switch (turn) {
       case 'W':
         return StoneColor.W;
@@ -4250,7 +4120,7 @@ angular.module('ngGo.Game.Node.Service', [
       default:
         return StoneColor.EMPTY;
     }
-  };
+  }
 
   /**
    * Conversions map
@@ -4273,7 +4143,7 @@ angular.module('ngGo.Game.Node.Service', [
   /**
    * Constructor
    */
-  var GameNode = function(properties, parent) {
+  function GameNode(properties, parent) {
 
     //Set parent and children
     this.parent = parent || null;
@@ -4287,7 +4157,7 @@ angular.module('ngGo.Game.Node.Service', [
         }
       }
     }
-  };
+  }
 
   /**
    * Get node's child specified by index or null if doesn't exist
@@ -4714,9 +4584,9 @@ angular.module('ngGo.Game.Path.Service', [
   /**
    * Constructor
    */
-  var GamePath = function() {
+  function GamePath() {
     this.reset();
-  };
+  }
 
   /**
    * Reset
@@ -4845,7 +4715,7 @@ angular.module('ngGo.Game.Path.Service', [
   /**
    * Helper to find node name recursively
    */
-  var findNodeName = function(node, nodeName, path) {
+  function findNodeName(node, nodeName, path) {
 
     //Found in this node?
     if (node.name && node.name === nodeName) {
@@ -4869,7 +4739,7 @@ angular.module('ngGo.Game.Path.Service', [
 
     //Not found
     return false;
-  };
+  }
 
   /**
    * Static helper to create a path object to reach a certain node
@@ -4919,7 +4789,7 @@ angular.module('ngGo.Game.Position.Service', [
   /**
    * Constructor
    */
-  var GamePosition = function(width, height) {
+  function GamePosition(width, height) {
 
     //Initialize
     this.error = 0;
@@ -4941,7 +4811,7 @@ angular.module('ngGo.Game.Position.Service', [
     if (width || height) {
       this.setSize(width, height);
     }
-  };
+  }
 
   /**
    * Set the grid size
@@ -5270,15 +5140,15 @@ angular.module('ngGo.Game.Score.Service', [
   /**
    * Helper to calculate the total points
    */
-  var calcTotal = function() {
+  function calcTotal() {
     return parseInt(this.stones) + parseInt(this.territory) +
       parseInt(this.captures) + parseInt(this.komi);
-  };
+  }
 
   /**
    * Constructor
    */
-  var GameScore = function() {
+  function GameScore() {
 
     //Get self
     var self = this;
@@ -5297,7 +5167,7 @@ angular.module('ngGo.Game.Score.Service', [
     this.white.total = function() {
       return calcTotal.call(self.white);
     };
-  };
+  }
 
   /**
    * Reset the game score
@@ -5375,7 +5245,7 @@ angular.module('ngGo.Game.Scorer.Service', [
   /**
    * Helper to set territory
    */
-  var territorySet = function(x, y, candidateColor, boundaryColor) {
+  function territorySet(x, y, candidateColor, boundaryColor) {
 
     //Get color at given position
     var posColor = this.stones.get(x, y);
@@ -5402,12 +5272,12 @@ angular.module('ngGo.Game.Scorer.Service', [
     territorySet.call(this, x, y - 1, candidateColor, boundaryColor);
     territorySet.call(this, x + 1, y, candidateColor, boundaryColor);
     territorySet.call(this, x, y + 1, candidateColor, boundaryColor);
-  };
+  }
 
   /**
    * Helper to reset territory
    */
-  var territoryReset = function(x, y) {
+  function territoryReset(x, y) {
 
     //Get original color from this position
     var origColor = this.game.position.stones.get(x, y);
@@ -5425,12 +5295,12 @@ angular.module('ngGo.Game.Scorer.Service', [
     territoryReset.call(this, x, y - 1);
     territoryReset.call(this, x + 1, y);
     territoryReset.call(this, x, y + 1);
-  };
+  }
 
   /**
    * Helper to determine score state
    */
-  var determineScoreState = function() {
+  function determineScoreState() {
 
     //Initialize vars
     var change = true;
@@ -5509,7 +5379,7 @@ angular.module('ngGo.Game.Scorer.Service', [
         }
       }
     }
-  };
+  }
 
   /**
    * this.game scorer class
@@ -5691,6 +5561,136 @@ angular.module('ngGo.Game.Scorer.Service', [
 
   //Return
   return GameScorer;
+}]);
+
+})(window, window.angular);
+
+(function(window, angular, undefined) {'use strict';
+
+/**
+ * InvalidDataError :: Error class to handle invalid data.
+ */
+
+/**
+ * Module definition and dependencies
+ */
+angular.module('ngGo.Errors.InvalidDataError.Service', [
+  'ngGo'
+])
+
+/**
+ * Factory definition
+ */
+.factory('InvalidDataError', ['ngGo', function(ngGo) {
+
+  /**
+   * Define error
+   */
+  function InvalidDataError(code) {
+
+    //Set name and message
+    this.code = code;
+    this.name = 'InvalidDataError';
+    this.message = 'Invalid data: ';
+
+    //Append code message
+    switch (code) {
+      case ngGo.error.NO_DATA:
+        this.message += 'no data to process.';
+        break;
+      case ngGo.error.UNKNOWN_DATA:
+        this.message += 'unknown data format.';
+        break;
+      case ngGo.error.INVALID_GIB:
+        this.message += 'unable to parse GIB data.';
+        break;
+      case ngGo.error.INVALID_SGF:
+        this.message += 'unable to parse SGF data.';
+        break;
+      case ngGo.error.INVALID_JGF_JSON:
+        this.message += 'unable to parse JGF data.';
+        break;
+      case ngGo.error.INVALID_JGF_TREE_JSON:
+        this.message += 'unable to parse the JGF tree data.';
+        break;
+      default:
+        this.message += 'unable to parse the data.';
+    }
+  }
+
+  /**
+   * Extend from error class
+   */
+  InvalidDataError.prototype = new Error();
+  InvalidDataError.prototype.constructor = InvalidDataError;
+
+  //Return object
+  return InvalidDataError;
+}]);
+
+})(window, window.angular);
+
+(function(window, angular, undefined) {'use strict';
+
+/**
+ * InvalidPositionError :: Error class to handle invalid moves.
+ */
+
+/**
+ * Module definition and dependencies
+ */
+angular.module('ngGo.Errors.InvalidPositionError.Service', [
+  'ngGo'
+])
+
+/**
+ * Factory definition
+ */
+.factory('InvalidPositionError', ['ngGo', 'StoneColor', function(ngGo, StoneColor) {
+
+  /**
+   * Define error
+   */
+  function InvalidPositionError(code, x, y, color) {
+
+    //Set name and message
+    this.code = code;
+    this.name = 'InvalidPositionError';
+    this.message = 'Invalid position detected.';
+
+    //Add position data
+    if (typeof x !== 'undefined' && typeof y !== 'undefined' && typeof color !== 'undefined') {
+      this.message += ' Trying to place a ' + (color === StoneColor.W ? 'white' : 'black') +
+        ' stone on (' + x + ', ' + y + ')';
+    }
+
+    //Append code message
+    switch (code) {
+      case ngGo.error.POSTITION_OUT_OF_BOUNDS:
+        this.message += ', but these coordinates are not on the board.';
+        break;
+      case ngGo.error.POSTITION_ALREADY_HAS_STONE:
+        this.message += ', but there is already a stone on those coordinates.';
+        break;
+      case ngGo.error.POSTITION_IS_SUICIDE:
+        this.message += ', but that would be suicide.';
+        break;
+      case ngGo.error.POSTITION_IS_REPEATING:
+        this.message += ', but this position already occured.';
+        break;
+      default:
+        this.message += '.';
+    }
+  }
+
+  /**
+   * Extend from error class
+   */
+  InvalidPositionError.prototype = new Error();
+  InvalidPositionError.prototype.constructor = InvalidPositionError;
+
+  //Return object
+  return InvalidPositionError;
 }]);
 
 })(window, window.angular);
@@ -6049,7 +6049,7 @@ angular.module('ngGo.Player.Service', [
     /**
      * Helper to append board grid coordinatess to the broadcast event object
      */
-    var processMouseEvent = function(broadcastEvent, mouseEvent) {
+    function processMouseEvent(broadcastEvent, mouseEvent) {
 
       //Can only do this with a board and mouse event
       if (!this.board || !mouseEvent) {
@@ -6104,7 +6104,7 @@ angular.module('ngGo.Player.Service', [
       if (mouseEvent.drag) {
         broadcastEvent.drag = mouseEvent.drag;
       }
-    };
+    }
 
     /**
      * Player class
@@ -6911,7 +6911,7 @@ angular.module('ngGo.Board.Layer.GridLayer.Service', [
   /**
    * Helper for drawing starpoints
    */
-  var drawStarPoint = function(gridX, gridY, starRadius, starColor) {
+  function drawStarPoint(gridX, gridY, starRadius, starColor) {
 
     //Don't draw if it falls outsize of the board grid
     if (gridX < this.board.grid.xLeft || gridX > this.board.grid.xRight) {
@@ -6930,19 +6930,19 @@ angular.module('ngGo.Board.Layer.GridLayer.Service', [
     this.context.fillStyle = starColor;
     this.context.arc(x, y, starRadius, 0, 2 * Math.PI, true);
     this.context.fill();
-  };
+  }
 
   /**
    * Constructor
    */
-  var GridLayer = function(board, context) {
+  function GridLayer(board, context) {
 
     //Set coordinates setting
     this.coordinates = false;
 
     //Call parent constructor
     BoardLayer.call(this, board, context);
-  };
+  }
 
   /**
    * Prototype extension
@@ -7154,14 +7154,14 @@ angular.module('ngGo.Board.Layer.HoverLayer.Service', [
   /**
    * Constructor
    */
-  var HoverLayer = function(board, context) {
+  function HoverLayer(board, context) {
 
     //Container for items to restore
     this.restore = [];
 
     //Call parent constructor
     BoardLayer.call(this, board, context);
-  };
+  }
 
   /**
    * Prototype extension
@@ -7337,11 +7337,11 @@ angular.module('ngGo.Board.Layer.MarkupLayer.Service', [
   /**
    * Constructor
    */
-  var MarkupLayer = function(board, context) {
+  function MarkupLayer(board, context) {
 
     //Call parent constructor
     BoardLayer.call(this, board, context);
-  };
+  }
 
   /**
    * Prototype extension
@@ -7466,7 +7466,7 @@ angular.module('ngGo.Board.Layer.ScoreLayer.Service', [
   /**
    * Constructor
    */
-  var ScoreLayer = function(board, context) {
+  function ScoreLayer(board, context) {
 
     //Points and captures
     this.points = [];
@@ -7474,7 +7474,7 @@ angular.module('ngGo.Board.Layer.ScoreLayer.Service', [
 
     //Call parent constructor
     BoardLayer.call(this, board, context);
-  };
+  }
 
   /**
    * Prototype extension
@@ -7573,11 +7573,11 @@ angular.module('ngGo.Board.Layer.ShadowLayer.Service', [
   /**
    * Constructor
    */
-  var ShadowLayer = function(board, context) {
+  function ShadowLayer(board, context) {
 
     //Call parent constructor
     BoardLayer.call(this, board, context);
-  };
+  }
 
   /**
    * Prototype extension
@@ -7670,14 +7670,14 @@ angular.module('ngGo.Board.Layer.StonesLayer.Service', [
   /**
    * Constructor
    */
-  var StonesLayer = function(board, context) {
+  function StonesLayer(board, context) {
 
     //Call parent constructor
     BoardLayer.call(this, board, context);
 
     //Set empty value for grid
     this.grid.whenEmpty(StoneColor.EMPTY);
-  };
+  }
 
   /**
    * Prototype extension
@@ -7999,7 +7999,7 @@ angular.module('ngGo.Board.Object.Markup.Service', [
   /**
    * Triangle draw handler
    */
-  var drawTriangle = function(markup) {
+  function drawTriangle(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8039,12 +8039,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Square draw handler
    */
-  var drawSquare = function(markup) {
+  function drawSquare(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8084,12 +8084,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Draw circle handler
    */
-  var drawCircle = function(markup) {
+  function drawCircle(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8126,12 +8126,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Draw mark handler
    */
-  var drawMark = function(markup) {
+  function drawMark(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8176,12 +8176,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Draw select handler
    */
-  var drawSelect = function(markup) {
+  function drawSelect(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8218,12 +8218,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Last move draw handler
    */
-  var drawLast = function(markup) {
+  function drawLast(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8261,12 +8261,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Draw happy smiley handler
    */
-  var drawHappySmiley = function(markup) {
+  function drawHappySmiley(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8314,12 +8314,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Draw sad smiley handler
    */
-  var drawSadSmiley = function(markup) {
+  function drawSadSmiley(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8367,12 +8367,12 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Draw label
    */
-  var drawLabel = function(markup) {
+  function drawLabel(markup) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(markup.x);
@@ -8428,18 +8428,18 @@ angular.module('ngGo.Board.Object.Markup.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Clear label
    */
-  var clearLabel = function(markup) {
+  function clearLabel(markup) {
 
     //No stone on location? Redraw the grid square, if we cleared it
     if (!this.board.has('stones', markup.x, markup.y)) {
       this.board.layers.grid.redrawCell(markup.x, markup.y);
     }
-  };
+  }
 
   /**
    * Markup class
@@ -8561,7 +8561,7 @@ angular.module('ngGo.Board.Object.Stone.Service', [
   /**
    * Mono colored stones
    */
-  var drawMono = function(stone) {
+  function drawMono(stone) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(stone.x);
@@ -8616,12 +8616,12 @@ angular.module('ngGo.Board.Object.Stone.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Glass stones
    */
-  var drawGlass = function(stone) {
+  function drawGlass(stone) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(stone.x);
@@ -8678,12 +8678,12 @@ angular.module('ngGo.Board.Object.Stone.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Slate and shell stones
    */
-  var drawSlateShell = function(stone) {
+  function drawSlateShell(stone) {
 
     //Get coordinates and stone radius
     var x = this.board.getAbsX(stone.x);
@@ -8778,7 +8778,7 @@ angular.module('ngGo.Board.Object.Stone.Service', [
 
     //Undo translation
     this.context.translate(-canvasTranslate, -canvasTranslate);
-  };
+  }
 
   /**
    * Constructor
@@ -9084,1311 +9084,6 @@ angular.module('ngGo.Board.Object.StoneShadow.Service', [
 (function(window, angular, undefined) {'use strict';
 
 /**
- * Gib2Jgf :: This is a parser wrapped by the KifuParser which is used to convert fom GIB to JGF.
- * Since the Gib format is not public, the accuracy of this parser is not guaranteed.
- */
-
-/**
- * Module definition and dependencies
- */
-angular.module('ngGo.Kifu.Parsers.Gib2Jgf.Service', [
-  'ngGo',
-  'ngGo.Kifu.Blank.Service'
-])
-
-/**
- * Factory definition
- */
-.factory('Gib2Jgf', ['ngGo', 'KifuBlank', function(ngGo, KifuBlank) {
-
-  /**
-   * Regular expressions
-   */
-  var regMove = /STO\s0\s([0-9]+)\s(1|2)\s([0-9]+)\s([0-9]+)/gi;
-  var regPlayer = /GAME(BLACK|WHITE)NAME=([A-Za-z0-9]+)\s\(([0-9]+D|K)\)/gi;
-  var regKomi = /GAMEGONGJE=([0-9]+)/gi;
-  var regDate = /GAMEDATE=([0-9]+)-\s?([0-9]+)-\s?([0-9]+)/g;
-  var regResultMargin = /GAMERESULT=(white|black)\s([0-9]+\.?[0-9]?)/gi;
-  var regResultOther = /GAMERESULT=(white|black)\s[a-z\s]+(resignation|time)/gi;
-
-  /**
-   * Player parser function
-   */
-  var parsePlayer = function(jgf, match) {
-
-    //Initialize players container
-    if (typeof jgf.game.players === 'undefined') {
-      jgf.game.players = [];
-    }
-
-    //Determine player color
-    var color = (match[1].toUpperCase() === 'BLACK') ? 'black' : 'white';
-
-    //Create player object
-    var player = {
-      color: color,
-      name: match[2],
-      rank: match[3].toLowerCase()
-    };
-
-    //Check if player of this color already exists, if so, overwrite
-    for (var p = 0; p < jgf.game.players.length; p++) {
-      if (jgf.game.players[p].color === color) {
-        jgf.game.players[p] = player;
-        return;
-      }
-    }
-
-    //Player of this color not found, push
-    jgf.game.players.push(player);
-  };
-
-  /**
-   * Komi parser function
-   */
-  var parseKomi = function(jgf, match) {
-    jgf.game.komi = parseFloat(match[1] / 10);
-  };
-
-  /**
-   * Date parser function
-   */
-  var parseDate = function(jgf, match) {
-
-    //Initialize dates container
-    if (typeof jgf.game.dates === 'undefined') {
-      jgf.game.dates = [];
-    }
-
-    //Push date
-    jgf.game.dates.push(match[1] + '-' + match[2] + '-' + match[3]);
-  };
-
-  /**
-   * Result parser function
-   */
-  var parseResult = function(jgf, match) {
-
-    //Winner color
-    var result = (match[1].toLowerCase() === 'black') ? 'B' : 'W';
-    result += '+';
-
-    //Win condition
-    if (match[2].match(/res/i)) {
-      result += 'R';
-    }
-    else if (match[2].match(/time/i)) {
-      result += 'T';
-    }
-    else {
-      result += match[2];
-    }
-
-    //Set in JGF
-    jgf.game.result = result;
-  };
-
-  /**
-   * Move parser function
-   */
-  var parseMove = function(jgf, node, match) {
-
-    //Determine player color
-    var color = match[2];
-    if (color === 1) {
-      color = 'B';
-    }
-    else if (color === 2) {
-      color = 'W';
-    }
-    else {
-      return;
-    }
-
-    //Create move container
-    node.move = {};
-
-    //Pass
-    if (false) {
-
-    }
-
-    //Regular move
-    else {
-      node.move[color] = [match[3] * 1, match[4] * 1];
-    }
-  };
-
-  /**
-   * Parser class
-   */
-  var Parser = {
-
-    /**
-     * Parse GIB string into a JGF object or string
-     */
-    parse: function(gib, stringified) {
-
-      //Get new JGF object
-      var jgf = KifuBlank.jgf();
-
-      //Initialize
-      var match;
-      var container = jgf.tree;
-
-      //Create first node for game, which is usually an empty board position, but can
-      //contain comments or board setup instructions, which will be added to the node
-      //later if needed.
-      var node = {root: true};
-      container.push(node);
-
-      //Find player information
-      while ((match = regPlayer.exec(gib))) {
-        parsePlayer(jgf, match);
-      }
-
-      //Find komi
-      if ((match = regKomi.exec(gib))) {
-        parseKomi(jgf, match);
-      }
-
-      //Find game date
-      if ((match = regDate.exec(gib))) {
-        parseDate(jgf, match);
-      }
-
-      //Find game result
-      if ((match = regResultMargin.exec(gib)) || (match = regResultOther.exec(gib))) {
-        parseResult(jgf, match);
-      }
-
-      //Find moves
-      while ((match = regMove.exec(gib))) {
-
-        //Create new node
-        node = {};
-
-        //Parse move
-        parseMove(jgf, node, match);
-
-        //Push node to container
-        container.push(node);
-      }
-
-      //Return stringified
-      if (stringified) {
-        return angular.toJson(jgf);
-      }
-
-      //Return jgf
-      return jgf;
-    }
-  };
-
-  //Return object
-  return Parser;
-}]);
-
-})(window, window.angular);
-
-(function(window, angular, undefined) {'use strict';
-
-/**
- * Jgf2Sgf :: This is a parser wrapped by the KifuParser which is used to convert fom JGF to SGF
- */
-
-/**
- * Module definition and dependencies
- */
-angular.module('ngGo.Kifu.Parsers.Jgf2Sgf.Service', [
-  'ngGo',
-  'ngGo.Kifu.Blank.Service'
-])
-
-/**
- * Factory definition
- */
-.factory('Jgf2Sgf', ['ngGo', 'sgfAliases', 'sgfGames', 'KifuBlank', function(ngGo, sgfAliases, sgfGames, KifuBlank) {
-
-  /**
-   * Flip SGF alias map and create JGF alias map
-   */
-  var jgfAliases = {};
-  for (var sgfProp in sgfAliases) {
-    if (sgfAliases.hasOwnProperty(sgfProp)) {
-      jgfAliases[sgfAliases[sgfProp]] = sgfProp;
-    }
-  }
-
-  /**
-   * Character index of "a"
-   */
-  var aChar = 'a'.charCodeAt(0);
-
-  /**
-   * Helper to convert to SGF coordinates
-   */
-  var convertCoordinates = function(coords) {
-    return String.fromCharCode(aChar + coords[0]) + String.fromCharCode(aChar + coords[1]);
-  };
-
-  /*****************************************************************************
-   * Conversion helpers
-   ***/
-
-  /**
-   * Helper to escape SGF info
-   */
-  var escapeSgf = function(text) {
-    if (typeof text === 'string') {
-      return text.replace(/\\/g, '\\\\').replace(/]/g, '\\]');
-    }
-    return text;
-  };
-
-  /**
-   * Helper to write an SGF group
-   */
-  var writeGroup = function(prop, values, output, escape) {
-    if (values.length) {
-      output.sgf += prop;
-      for (var i = 0; i < values.length; i++) {
-        output.sgf += '[' + (escape ? escapeSgf(values[i]) : values[i]) + ']';
-      }
-    }
-  };
-
-  /**
-   * Move parser
-   */
-  var parseMove = function(move, output) {
-
-    //Determine and validate color
-    var color = move.B ? 'B' : (move.W ? 'W' : '');
-    if (color === '') {
-      return;
-    }
-
-    //Determine move
-    var coords = (move[color] === 'pass') ? '' : move[color];
-
-    //Append to SGF
-    output.sgf += color + '[' + convertCoordinates(coords) + ']';
-  };
-
-  /**
-   * Setup parser
-   */
-  var parseSetup = function(setup, output) {
-
-    //Loop colors
-    for (var color in setup) {
-      if (setup.hasOwnProperty(color)) {
-
-        //Convert coordinates
-        for (var i = 0; i < setup[color].length; i++) {
-          setup[color][i] = convertCoordinates(setup[color][i]);
-        }
-
-        //Write as group
-        writeGroup('A' + color, setup[color], output);
-      }
-    }
-  };
-
-  /**
-   * Score parser
-   */
-  var parseScore = function(score, output) {
-
-    //Loop colors
-    for (var color in score) {
-      if (score.hasOwnProperty(color)) {
-
-        //Convert coordinates
-        for (var i = 0; i < score[color].length; i++) {
-          score[color][i] = convertCoordinates(score[color][i]);
-        }
-
-        //Write as group
-        writeGroup('T' + color, score[color], output);
-      }
-    }
-  };
-
-  /**
-   * Markup parser
-   */
-  var parseMarkup = function(markup, output) {
-
-    //Loop markup types
-    for (var type in markup) {
-      if (markup.hasOwnProperty(type)) {
-        var i;
-
-        //Label type has the label text appended to the coords
-        if (type === 'label') {
-          for (i = 0; i < markup[type].length; i++) {
-            markup[type][i] = convertCoordinates(markup[type][i]) + ':' + markup[type][i][2];
-          }
-        }
-        else {
-          for (i = 0; i < markup[type].length; i++) {
-            markup[type][i] = convertCoordinates(markup[type][i]);
-          }
-        }
-
-        //Convert type
-        if (typeof jgfAliases[type] !== 'undefined') {
-          type = jgfAliases[type];
-        }
-
-        //Write as group
-        writeGroup(type, markup[type], output);
-      }
-    }
-  };
-
-  /**
-   * Turn parser
-   */
-  var parseTurn = function(turn, output) {
-    output.sgf += 'PL[' + turn + ']';
-  };
-
-  /**
-   * Comments parser
-   */
-  var parseComments = function(comments, output) {
-
-    //Determine key
-    var key = (typeof jgfAliases.comments !== 'undefined') ? jgfAliases.comments : 'C';
-
-    //Flatten comment objects
-    var flatComments = [];
-    for (var c = 0; c < comments.length; c++) {
-      if (typeof comments[c] === 'string') {
-        flatComments.push(comments[c]);
-      }
-      else if (comments[c].comment) {
-        flatComments.push(comments[c].comment);
-      }
-    }
-
-    //Write as group
-    writeGroup(key, flatComments, output, true);
-  };
-
-  /**
-   * Node name parser
-   */
-  var parseNodeName = function(nodeName, output) {
-    var key = (typeof jgfAliases.name !== 'undefined') ? jgfAliases.name : 'N';
-    output.sgf += key + '[' + escapeSgf(nodeName) + ']';
-  };
-
-  /**
-   * Game parser
-   */
-  var parseGame = function(game) {
-
-    //Loop SGF game definitions
-    for (var i in sgfGames) {
-      if (sgfGames.hasOwnProperty(i) && sgfGames[i] === game) {
-        return i;
-      }
-    }
-
-    //Not found
-    return 0;
-  };
-
-  /**
-   * Application parser
-   */
-  var parseApplication = function(application) {
-    var parts = application.split(' v');
-    if (parts.length > 1) {
-      return parts[0] + ':' + parts[1];
-    }
-    return application;
-  };
-
-  /**
-   * Player instructions parser
-   */
-  var parsePlayer = function(player, rootProperties) {
-
-    //Variation handling
-    var st = 0;
-    if (!player.variationMarkup) {
-      st += 2;
-    }
-    if (player.variationSiblings) {
-      st += 1;
-    }
-
-    //Set in root properties
-    rootProperties.ST = st;
-  };
-
-  /**
-   * Board parser
-   */
-  var parseBoard = function(board, rootProperties) {
-
-    //Both width and height should be given
-    if (board.width && board.height) {
-
-      //Same dimensions?
-      if (board.width === board.height) {
-        rootProperties.SZ = board.width;
-      }
-
-      //Different dimensions are not supported by SGF, but OGS uses the
-      //format w:h, so we will stick with that for anyone who supports it.
-      else {
-        rootProperties.SZ = board.width + ':' + board.height;
-      }
-    }
-
-    //Otherwise, check if only width or height were given at least
-    else if (board.width) {
-      rootProperties.SZ = board.width;
-    }
-    else if (board.height) {
-      rootProperties.SZ = board.height;
-    }
-
-    //Can't determine size
-    else {
-      rootProperties.SZ = '';
-    }
-  };
-
-  /**
-   * Players parser
-   */
-  var parsePlayers = function(players, rootProperties) {
-
-    //Loop players
-    for (var p = 0; p < players.length; p++) {
-
-      //Validate color
-      if (!players[p].color || (players[p].color !== 'black' && players[p].color !== 'white')) {
-        continue;
-      }
-
-      //Get SGF color
-      var color = (players[p].color === 'black') ? 'B' : 'W';
-
-      //Name given?
-      if (players[p].name) {
-        rootProperties['P' + color] = players[p].name;
-      }
-
-      //Rank given?
-      if (players[p].rank) {
-        rootProperties[color + 'R'] = players[p].rank;
-      }
-
-      //Team given?
-      if (players[p].team) {
-        rootProperties[color + 'T'] = players[p].team;
-      }
-    }
-  };
-
-  /**
-   * Parse function to property mapper
-   */
-  var parsingMap = {
-
-    //Node properties
-    'move': parseMove,
-    'setup': parseSetup,
-    'score': parseScore,
-    'markup': parseMarkup,
-    'turn': parseTurn,
-    'comments': parseComments,
-    'name': parseNodeName,
-
-    //Info properties
-    'record.application': parseApplication,
-    'player': parsePlayer,
-    'board': parseBoard,
-    'game.type': parseGame,
-    'game.players': parsePlayers
-  };
-
-  /*****************************************************************************
-   * Parser functions
-   ***/
-
-  /**
-   * Helper to write a JGF tree to SGF
-   */
-  var writeTree = function(tree, output) {
-
-    //Loop nodes in the tree
-    for (var i = 0; i < tree.length; i++) {
-      var node = tree[i];
-
-      //Array? That means a variation
-      if (angular.isArray(node)) {
-        for (var j = 0; j < node.length; j++) {
-          output.sgf += '(\n;';
-          writeTree(node[j], output);
-          output.sgf += '\n)';
-        }
-
-        //Continue
-        continue;
-      }
-
-      //Loop node properties
-      for (var key in node) {
-        if (node.hasOwnProperty(key)) {
-
-          //Handler present in parsing map?
-          if (typeof parsingMap[key] !== 'undefined') {
-            parsingMap[key](node[key], output);
-            continue;
-          }
-
-          //Other object, can't handle it
-          if (typeof node[key] === 'object') {
-            continue;
-          }
-
-          //Anything else, append it
-          output.sgf += key + '[' + escapeSgf(node[key]) + ']';
-        }
-      }
-
-      //More to come?
-      if ((i + 1) < tree.length) {
-        output.sgf += '\n;';
-      }
-    }
-  };
-
-  /**
-   * Helper to extract all SGF root properties from a JGF object
-   */
-  var extractRootProperties = function(jgf, rootProperties, key) {
-
-    //Initialize key
-    if (typeof key === 'undefined') {
-      key = '';
-    }
-
-    //Loop properties of jgf node
-    for (var subKey in jgf) {
-      if (jgf.hasOwnProperty(subKey)) {
-
-        //Skip SGF signature (as we keep our own)
-        if (subKey === 'sgf') {
-          continue;
-        }
-
-        //Build jgf key
-        var jgfKey = (key === '') ? subKey : key + '.' + subKey;
-
-        //If the item is an object, handle separately
-        if (typeof jgf[subKey] === 'object') {
-
-          //Handler for this object present in parsing map?
-          if (typeof parsingMap[jgfKey] !== 'undefined') {
-            parsingMap[jgfKey](jgf[subKey], rootProperties);
-          }
-
-          //Otherwise, just flatten and call this function recursively
-          else {
-            extractRootProperties(jgf[subKey], rootProperties, jgfKey);
-          }
-          continue;
-        }
-
-        //Check if it's a known key, if so, append the value to the root
-        var value;
-        if (typeof jgfAliases[jgfKey] !== 'undefined') {
-
-          //Handler present in parsing map?
-          if (typeof parsingMap[jgfKey] !== 'undefined') {
-            value = parsingMap[jgfKey](jgf[subKey]);
-          }
-          else {
-            value = escapeSgf(jgf[subKey]);
-          }
-
-          //Set in root properties
-          rootProperties[jgfAliases[jgfKey]] = value;
-        }
-      }
-    }
-  };
-
-  /**
-   * Parser class
-   */
-  var Parser = {
-
-    /**
-     * Parse JGF object or string into an SGF string
-     */
-    parse: function(jgf) {
-
-      //String given?
-      if (typeof jgf === 'string') {
-        jgf = angular.fromJson(jgf);
-      }
-
-      //Must have moves tree
-      if (!jgf.tree) {
-        console.error('No moves tree in JGF object');
-        return;
-      }
-
-      //Initialize output (as object, so it remains a reference) and root properties container
-      var output = {sgf: '(\n;'};
-      var root = angular.copy(jgf);
-      var rootProperties = KifuBlank.sgf();
-
-      //The first node of the JGF tree is the root node, and it can contain comments,
-      //board setup parameters, etc. It doesn't contain moves. We handle it separately here
-      //and attach it to the root
-      if (jgf.tree && jgf.tree.length > 0 && jgf.tree[0].root) {
-        root = angular.extend(root, jgf.tree[0]);
-        delete root.root;
-        delete jgf.tree[0];
-      }
-
-      //Set root properties
-      delete root.tree;
-      extractRootProperties(root, rootProperties);
-
-      //Write root properties
-      for (var key in rootProperties) {
-        if (rootProperties[key]) {
-          output.sgf += key + '[' + escapeSgf(rootProperties[key]) + ']';
-        }
-      }
-
-      //Write game tree
-      writeTree(jgf.tree, output);
-
-      //Close SGF and return
-      output.sgf += ')';
-      return output.sgf;
-    }
-  };
-
-  //Return object
-  return Parser;
-}]);
-
-})(window, window.angular);
-
-(function(window, angular, undefined) {'use strict';
-
-/**
- * Sgf2Jgf :: This is a parser wrapped by the KifuParser which is used to convert fom SGF to JGF
- */
-
-/**
- * Module definition and dependencies
- */
-angular.module('ngGo.Kifu.Parsers.Sgf2Jgf.Service', [
-  'ngGo',
-  'ngGo.Kifu.Blank.Service'
-])
-
-/**
- * Factory definition
- */
-.factory('Sgf2Jgf', ['ngGo', 'sgfAliases', 'sgfGames', 'KifuBlank', function(ngGo, sgfAliases, sgfGames, KifuBlank) {
-
-  /**
-   * Regular expressions for SGF data
-   */
-  var regSequence = /\(|\)|(;(\s*[A-Z]+\s*((\[\])|(\[(.|\s)*?([^\\]\])))+)*)/g;
-  var regNode = /[A-Z]+\s*((\[\])|(\[(.|\s)*?([^\\]\])))+/g;
-  var regProperty = /[A-Z]+/;
-  var regValues = /(\[\])|(\[(.|\s)*?([^\\]\]))/g;
-
-  /**
-   * Character index of "a"
-   */
-  var aChar = 'a'.charCodeAt(0);
-
-  /**
-   * Helper to convert SGF coordinates
-   */
-  var convertCoordinates = function(coords) {
-    return [coords.charCodeAt(0) - aChar, coords.charCodeAt(1) - aChar];
-  };
-
-  /*****************************************************************************
-   * Conversion helpers
-   ***/
-
-  /**
-   * Application parser function (doesn't overwrite existing signature)
-   */
-  var parseApp = function(jgf, node, key, value) {
-    if (!jgf.record.application) {
-      var app = value[0].split(':');
-      if (app.length > 1) {
-        jgf.record.application = app[0] + ' v' + app[1];
-      }
-      else {
-        jgf.record.application = app[0];
-      }
-    }
-  };
-
-  /**
-   * SGF format parser
-   */
-  var parseSgfFormat = function() {
-    return;
-  };
-
-  /**
-   * Game type parser function
-   */
-  var parseGame = function(jgf, node, key, value) {
-    var game = value[0];
-    if (typeof sgfGames[game] !== 'undefined') {
-      jgf.game.type = sgfGames[game];
-    }
-    else {
-      jgf.game.type = value[0];
-    }
-  };
-
-  /**
-   * Move parser function
-   */
-  var parseMove = function(jgf, node, key, value) {
-
-    //Create move container
-    node.move = {};
-
-    //Pass
-    if (value[0] === '' || (jgf.width <= 19 && value[0] === 'tt')) {
-      node.move[key] = 'pass';
-    }
-
-    //Regular move
-    else {
-      node.move[key] = convertCoordinates(value[0]);
-    }
-  };
-
-  /**
-   * Comment parser function
-   */
-  var parseComment = function(jgf, node, key, value) {
-
-    //Get key alias
-    if (typeof sgfAliases[key] !== 'undefined') {
-      key = sgfAliases[key];
-    }
-
-    //Set value
-    node[key] = value;
-  };
-
-  /**
-   * Node name parser function
-   */
-  var parseNodeName = function(jgf, node, key, value) {
-
-    //Get key alias
-    if (typeof sgfAliases[key] !== 'undefined') {
-      key = sgfAliases[key];
-    }
-
-    //Set value
-    node[key] = value[0];
-  };
-
-  /**
-   * Board setup parser function
-   */
-  var parseSetup = function(jgf, node, key, value) {
-
-    //Initialize setup container on node
-    if (typeof node.setup === 'undefined') {
-      node.setup = {};
-    }
-
-    //Remove "A" from setup key
-    key = key.charAt(1);
-
-    //Initialize setup container of this type
-    if (typeof node.setup[key] === 'undefined') {
-      node.setup[key] = [];
-    }
-
-    //Add values
-    for (var i = 0; i < value.length; i++) {
-      node.setup[key].push(convertCoordinates(value[i]));
-    }
-  };
-
-  /**
-   * Scoring parser function
-   */
-  var parseScore = function(jgf, node, key, value) {
-
-    //Initialize score container on node
-    if (typeof node.score === 'undefined') {
-      node.score = {
-        B: [],
-        W: []
-      };
-    }
-
-    //Remove "T" from setup key
-    key = key.charAt(1);
-
-    //Add values
-    for (var i = 0; i < value.length; i++) {
-      node.score[key].push(convertCoordinates(value[i]));
-    }
-  };
-
-  /**
-   * Turn parser function
-   */
-  var parseTurn = function(jgf, node, key, value) {
-    node.turn = value[0];
-  };
-
-  /**
-   * Label parser function
-   */
-  var parseLabel = function(jgf, node, key, value) {
-
-    //Get key alias
-    if (typeof sgfAliases[key] !== 'undefined') {
-      key = sgfAliases[key];
-    }
-
-    //Initialize markup container on node
-    if (typeof node.markup === 'undefined') {
-      node.markup = {};
-    }
-
-    //Initialize markup container of this type
-    if (typeof node.markup[key] === 'undefined') {
-      node.markup[key] = [];
-    }
-
-    //Add values
-    for (var i = 0; i < value.length; i++) {
-
-      //Split off coordinates and add label contents
-      var coords = convertCoordinates(value[i].substr(0, 2));
-      coords.push(value[i].substr(3));
-
-      //Add to node
-      node.markup[key].push(coords);
-    }
-  };
-
-  /**
-   * Markup parser function
-   */
-  var parseMarkup = function(jgf, node, key, value) {
-
-    //Get key alias
-    if (typeof sgfAliases[key] !== 'undefined') {
-      key = sgfAliases[key];
-    }
-
-    //Initialize markup container on node
-    if (typeof node.markup === 'undefined') {
-      node.markup = {};
-    }
-
-    //Initialize markup container of this type
-    if (typeof node.markup[key] === 'undefined') {
-      node.markup[key] = [];
-    }
-
-    //Add values
-    for (var i = 0; i < value.length; i++) {
-      node.markup[key].push(convertCoordinates(value[i]));
-    }
-  };
-
-  /**
-   * Size parser function
-   */
-  var parseSize = function(jgf, node, key, value) {
-
-    //Initialize board container
-    if (typeof jgf.board === 'undefined') {
-      jgf.board = {};
-    }
-
-    //Add size property (can be width:height or just a single size)
-    var size = value[0].split(':');
-    if (size.length > 1) {
-      jgf.board.width = parseInt(size[0]);
-      jgf.board.height = parseInt(size[1]);
-    }
-    else {
-      jgf.board.width = jgf.board.height = parseInt(size[0]);
-    }
-  };
-
-  /**
-   * Date parser function
-   */
-  var parseDate = function(jgf, node, key, value) {
-
-    //Initialize dates container
-    if (typeof jgf.game.dates === 'undefined') {
-      jgf.game.dates = [];
-    }
-
-    //Explode dates
-    var dates = value[0].split(',');
-    for (var d = 0; d < dates.length; d++) {
-      jgf.game.dates.push(dates[d]);
-    }
-  };
-
-  /**
-   * Komi parser function
-   */
-  var parseKomi = function(jgf, node, key, value) {
-    jgf.game.komi = parseFloat(value[0]);
-  };
-
-  /**
-   * Variations handling parser function
-   */
-  var parseVariations = function(jgf, node, key, value) {
-
-    //Initialize display property
-    if (typeof jgf.player === 'undefined') {
-      jgf.player = {};
-    }
-
-    //Initialize variation display settings
-    jgf.player.variationMarkup = false;
-    jgf.player.variationChildren = false;
-    jgf.player.variationSiblings = false;
-
-    //Parse as integer
-    var st = parseInt(value[0]);
-
-    //Determine what we want (see SGF specs for details)
-    switch (st) {
-      case 0:
-        jgf.player.variationMarkup = true;
-        jgf.player.variationChildren = true;
-        break;
-      case 1:
-        jgf.player.variationMarkup = true;
-        jgf.player.variationSiblings = true;
-        break;
-      case 2:
-        jgf.player.variationChildren = true;
-        break;
-      case 3:
-        jgf.player.variationSiblings = true;
-        break;
-    }
-  };
-
-  /**
-   * Player info parser function
-   */
-  var parsePlayer = function(jgf, node, key, value) {
-
-    //Initialize players container
-    if (typeof jgf.game.players === 'undefined') {
-      jgf.game.players = [];
-    }
-
-    //Determine player color
-    var color = (key === 'PB' || key === 'BT' || key === 'BR') ? 'black' : 'white';
-
-    //Get key alias
-    if (typeof sgfAliases[key] !== 'undefined') {
-      key = sgfAliases[key];
-    }
-
-    //Check if player of this color already exists
-    for (var p = 0; p < jgf.game.players.length; p++) {
-      if (jgf.game.players[p].color === color) {
-        jgf.game.players[p][key] = value[0];
-        return;
-      }
-    }
-
-    //Player of this color not found, initialize
-    var player = {color: color};
-    player[key] = value[0];
-    jgf.game.players.push(player);
-  };
-
-  /**
-   * Parsing function to property mapper
-   */
-  var parsingMap = {
-
-    //Application, game type, board size, komi, date
-    'AP': parseApp,
-    'FF': parseSgfFormat,
-    'GM': parseGame,
-    'SZ': parseSize,
-    'KM': parseKomi,
-    'DT': parseDate,
-
-    //Variations handling
-    'ST': parseVariations,
-
-    //Player info handling
-    'PB': parsePlayer,
-    'PW': parsePlayer,
-    'BT': parsePlayer,
-    'WT': parsePlayer,
-    'BR': parsePlayer,
-    'WR': parsePlayer,
-
-    //Moves
-    'B': parseMove,
-    'W': parseMove,
-
-    //Node annotation
-    'C': parseComment,
-    'N': parseNodeName,
-
-    //Board setup
-    'AB': parseSetup,
-    'AW': parseSetup,
-    'AE': parseSetup,
-    'PL': parseTurn,
-    'TW': parseScore,
-    'TB': parseScore,
-
-    //Markup
-    'CR': parseMarkup,
-    'SQ': parseMarkup,
-    'TR': parseMarkup,
-    'MA': parseMarkup,
-    'SL': parseMarkup,
-    'LB': parseLabel
-  };
-
-  /**
-   * These properties need a node object
-   */
-  var needsNode = [
-    'B', 'W', 'C', 'N', 'AB', 'AW', 'AE', 'PL', 'LB', 'CR', 'SQ', 'TR', 'MA', 'SL', 'TW', 'TB'
-  ];
-
-  /*****************************************************************************
-   * Parser helpers
-   ***/
-
-  /**
-   * Set info in the JGF tree at a certain position
-   */
-  var setInfo = function(jgf, position, value) {
-
-    //Position given must be an array
-    if (typeof position !== 'object') {
-      return;
-    }
-
-    //Initialize node to attach value to
-    var node = jgf;
-    var key;
-
-    //Loop the position
-    for (var p = 0; p < position.length; p++) {
-
-      //Get key
-      key = position[p];
-
-      //Last key reached? Done
-      if ((p + 1) === position.length) {
-        break;
-      }
-
-      //Create container if not set
-      if (typeof node[key] !== 'object') {
-        node[key] = {};
-      }
-
-      //Move up in tree
-      node = node[key];
-    }
-
-    //Set value
-    node[key] = value;
-  };
-
-  /**
-   * Parser class
-   */
-  var Parser = {
-
-    /**
-     * Parse SGF string into a JGF object or string
-     */
-    parse: function(sgf, stringified) {
-
-      //Get new JGF object (with SGF node as a base)
-      var jgf = KifuBlank.jgf({record: {sgf: {}}});
-
-      //Initialize
-      var stack = [];
-      var container = jgf.tree;
-
-      //Create first node for game, which is usually an empty board position, but can
-      //contain comments or board setup instructions, which will be added to the node
-      //later if needed.
-      var node = {root: true};
-      container.push(node);
-
-      //Find sequence of elements
-      var sequence = sgf.match(regSequence);
-
-      //Loop sequence items
-      for (var i = 0; i < sequence.length; i++) {
-
-        //Push stack if new variation found
-        if (sequence[i] === '(') {
-
-          //First encounter, this defines the main tree branch, so skip
-          if (i === 0 || i === '0') {
-            continue;
-          }
-
-          //Push the current container to the stack
-          stack.push(container);
-
-          //Create variation container if it doesn't exist yet
-          if (!angular.isArray(container[container.length - 1])) {
-            container.push([]);
-          }
-
-          //Use variation container
-          container = container[container.length - 1];
-
-          //Now create moves container
-          container.push([]);
-          container = container[container.length - 1];
-          continue;
-        }
-
-        //Grab last container from stack if end of variation reached
-        else if (sequence[i] === ')') {
-          if (stack.length) {
-            container = stack.pop();
-          }
-          continue;
-        }
-
-        //Make array of properties within this sequence
-        var properties = sequence[i].match(regNode) || [];
-
-        //Loop them
-        for (var j = 0; j < properties.length; j++) {
-
-          //Get property's key and separate values
-          var key = regProperty.exec(properties[j])[0].toUpperCase();
-          var values = properties[j].match(regValues);
-
-          //Remove additional braces [ and ]
-          for (var k = 0; k < values.length; k++) {
-            values[k] = values[k].substring(1, values[k].length - 1).replace(/\\(?!\\)/g, '');
-          }
-
-          //SGF parser present for this key? Call it, and we're done
-          if (typeof parsingMap[key] !== 'undefined') {
-
-            //Does this type of property need a node?
-            if (needsNode.indexOf(key) !== -1) {
-
-              //If no node object present, create a new node
-              //For moves, always a new node is created
-              if (!node || key === 'B' || key === 'W') {
-                node = {};
-                container.push(node);
-              }
-            }
-
-            //Apply parsing function on node
-            parsingMap[key](jgf, node, key, values);
-            continue;
-          }
-
-          //No SGF parser present, we continue with regular property handling
-
-          //If there is only one value, simplify array
-          if (values.length === 1) {
-            values = values[0];
-          }
-
-          //SGF alias known? Then this is an info element and we handle it accordingly
-          if (typeof sgfAliases[key] !== 'undefined') {
-
-            //The position in the JGF object is represented by dot separated strings
-            //in the sgfAliases array. Split the position and use the setInfo helper
-            //to set the info on the JGF object
-            setInfo(jgf, sgfAliases[key].split('.'), values);
-            continue;
-          }
-
-          //No SGF alias present either, just append the data
-
-          //Save in node
-          if (node) {
-            node[key] = values;
-          }
-
-          //Save in root
-          else {
-            jgf[key] = values;
-          }
-        }
-
-        //Reset node, unless this was the root node
-        if (node && !node.root) {
-          node = null;
-        }
-      }
-
-      //Return stringified
-      if (stringified) {
-        return angular.toJson(jgf);
-      }
-
-      //Return jgf
-      return jgf;
-    }
-  };
-
-  //Return object
-  return Parser;
-}]);
-
-})(window, window.angular);
-
-(function(window, angular, undefined) {'use strict';
-
-/**
  * PlayerModeCommon :: This class governs common event handling of the player shared by
  * various player modes. It's basically an abstract player mode and it can't be actively set.
  */
@@ -10437,7 +9132,7 @@ angular.module('ngGo.Player.Mode.Common.Service', [
   /**
    * Helper to build drag object
    */
-  var dragObject = function(event) {
+  function dragObject(event) {
 
     //Initialize drag object
     var drag = {
@@ -10467,7 +9162,7 @@ angular.module('ngGo.Player.Mode.Common.Service', [
 
     //Return
     return drag;
-  };
+  }
 
   /**
    * Normalize the mousewheel event helper
@@ -10802,7 +9497,7 @@ angular.module('ngGo.Player.Mode.Edit.Service', [
     /**
      * Update hover mark at specific coordinates
      */
-    var updateHoverMark = function(x, y, isDrag) {
+    function updateHoverMark(x, y, isDrag) {
 
       //If no coordinates specified, use last mouse coordinates
       if (typeof x === 'undefined' || typeof y === 'undefined') {
@@ -10911,12 +9606,12 @@ angular.module('ngGo.Player.Mode.Edit.Service', [
           }
           break;
       }
-    };
+    }
 
     /**
      * Helper to set markup
      */
-    var setMarkup = function(x, y) {
+    function setMarkup(x, y) {
 
       //Already markup in place? Remove it first
       if (this.game.hasMarkup(x, y)) {
@@ -10970,12 +9665,12 @@ angular.module('ngGo.Player.Mode.Edit.Service', [
       else {
         this.game.addMarkup(x, y, this.markupTool);
       }
-    };
+    }
 
     /**
      * Helper to set a stone
      */
-    var setStone = function(x, y, isDrag) {
+    function setStone(x, y, isDrag) {
 
       //Get the stone color
       var color = this.setupToolColor();
@@ -11005,12 +9700,12 @@ angular.module('ngGo.Player.Mode.Edit.Service', [
 
       //Redraw markup
       this.board.layers.markup.redrawCell(x, y);
-    };
+    }
 
     /**
      * Find all markup labels in current position
      */
-    var findAllMarkupLabels = function() {
+    function findAllMarkupLabels() {
 
       //Clear
       this.markupLabels = [];
@@ -11027,7 +9722,7 @@ angular.module('ngGo.Player.Mode.Edit.Service', [
           this.markupLabels.push(markup[i].text);
         }
       }
-    };
+    }
 
     /**
      * Player extension
@@ -11418,7 +10113,7 @@ angular.module('ngGo.Player.Mode.Replay.Service', [
     /**
      * Helper to update the hover mark
      */
-    var updateHoverMark = function(x, y) {
+    function updateHoverMark(x, y) {
 
       //If no coordinates specified, use last mouse coordinates
       if (typeof x === 'undefined' || typeof y === 'undefined') {
@@ -11458,12 +10153,12 @@ angular.module('ngGo.Player.Mode.Replay.Service', [
           }
           break;
       }
-    };
+    }
 
     /**
      * Helper to show move variations on the board
      */
-    var showMoveVariations = function(variations) {
+    function showMoveVariations(variations) {
       for (var i = 0; i < variations.length; i++) {
 
         //Auto variation markup should never overwrite existing markup
@@ -11478,21 +10173,21 @@ angular.module('ngGo.Player.Mode.Replay.Service', [
           color: this.board.theme.get('markup.variation.color')
         });
       }
-    };
+    }
 
     /**
      * Helper to hide move variations from the board
      */
-    var hideMoveVariations = function(variations) {
+    function hideMoveVariations(variations) {
       for (var i = 0; i < variations.length; i++) {
         this.board.remove('markup', variations[i].move.x, variations[i].move.y);
       }
-    };
+    }
 
     /**
      * Draw (or clear) move variations on the board
      */
-    var drawMoveVariations = function(show) {
+    function drawMoveVariations(show) {
 
       //Check if we can do something
       if (!this.board || !this.game || !this.game.isLoaded()) {
@@ -11527,7 +10222,7 @@ angular.module('ngGo.Player.Mode.Replay.Service', [
           hideMoveVariations.call(this, variations);
         }
       }
-    };
+    }
 
     /**
      * Player extension
@@ -11851,7 +10546,7 @@ angular.module('ngGo.Player.Mode.Solve.Service', [
     /**
      * Check if we can make a move
      */
-    var canMakeMove = function() {
+    function canMakeMove() {
 
       //We can make a move when...
 
@@ -11877,12 +10572,12 @@ angular.module('ngGo.Player.Mode.Solve.Service', [
 
       //Otherwise, we can't make a move
       return false;
-    };
+    }
 
     /**
      * Helper to update the hover mark
      */
-    var updateHoverMark = function(x, y) {
+    function updateHoverMark(x, y) {
 
       //If no coordinates specified, use last mouse coordinates
       if (typeof x === 'undefined' || typeof y === 'undefined') {
@@ -11910,12 +10605,12 @@ angular.module('ngGo.Player.Mode.Solve.Service', [
           }
           break;
       }
-    };
+    }
 
     /**
      * Helper to show solution paths
      */
-    var showSolutionPaths = function(variations) {
+    function showSolutionPaths(variations) {
       for (var i = 0; i < variations.length; i++) {
         if (variations[i].solution === true) {
           this.board.add('markup', variations[i].move.x, variations[i].move.y, {
@@ -11934,21 +10629,21 @@ angular.module('ngGo.Player.Mode.Solve.Service', [
           });
         }
       }
-    };
+    }
 
     /**
      * Helper to hide solution paths
      */
-    var hideSolutionPaths = function(variations) {
+    function hideSolutionPaths(variations) {
       for (var i = 0; i < variations.length; i++) {
         this.board.remove('markup', variations[i].move.x, variations[i].move.y);
       }
-    };
+    }
 
     /**
      * Draw (or clear) solution paths
      */
-    var drawSolutionPaths = function(show) {
+    function drawSolutionPaths(show) {
 
       //Check if we can do something
       if (!this.board || !this.game || !this.game.isLoaded()) {
@@ -11974,7 +10669,7 @@ angular.module('ngGo.Player.Mode.Solve.Service', [
       else {
         hideSolutionPaths.call(this, variations);
       }
-    };
+    }
 
     /**
      * Player extension
@@ -12369,6 +11064,1311 @@ angular.module('ngGo.Player.Mode.Solve.Service', [
     //Return
     return PlayerModeSolve;
   }];
+}]);
+
+})(window, window.angular);
+
+(function(window, angular, undefined) {'use strict';
+
+/**
+ * Gib2Jgf :: This is a parser wrapped by the KifuParser which is used to convert fom GIB to JGF.
+ * Since the Gib format is not public, the accuracy of this parser is not guaranteed.
+ */
+
+/**
+ * Module definition and dependencies
+ */
+angular.module('ngGo.Kifu.Parsers.Gib2Jgf.Service', [
+  'ngGo',
+  'ngGo.Kifu.Blank.Service'
+])
+
+/**
+ * Factory definition
+ */
+.factory('Gib2Jgf', ['ngGo', 'KifuBlank', function(ngGo, KifuBlank) {
+
+  /**
+   * Regular expressions
+   */
+  var regMove = /STO\s0\s([0-9]+)\s(1|2)\s([0-9]+)\s([0-9]+)/gi;
+  var regPlayer = /GAME(BLACK|WHITE)NAME=([A-Za-z0-9]+)\s\(([0-9]+D|K)\)/gi;
+  var regKomi = /GAMEGONGJE=([0-9]+)/gi;
+  var regDate = /GAMEDATE=([0-9]+)-\s?([0-9]+)-\s?([0-9]+)/g;
+  var regResultMargin = /GAMERESULT=(white|black)\s([0-9]+\.?[0-9]?)/gi;
+  var regResultOther = /GAMERESULT=(white|black)\s[a-z\s]+(resignation|time)/gi;
+
+  /**
+   * Player parser function
+   */
+  function parsePlayer(jgf, match) {
+
+    //Initialize players container
+    if (typeof jgf.game.players === 'undefined') {
+      jgf.game.players = [];
+    }
+
+    //Determine player color
+    var color = (match[1].toUpperCase() === 'BLACK') ? 'black' : 'white';
+
+    //Create player object
+    var player = {
+      color: color,
+      name: match[2],
+      rank: match[3].toLowerCase()
+    };
+
+    //Check if player of this color already exists, if so, overwrite
+    for (var p = 0; p < jgf.game.players.length; p++) {
+      if (jgf.game.players[p].color === color) {
+        jgf.game.players[p] = player;
+        return;
+      }
+    }
+
+    //Player of this color not found, push
+    jgf.game.players.push(player);
+  }
+
+  /**
+   * Komi parser function
+   */
+  function parseKomi(jgf, match) {
+    jgf.game.komi = parseFloat(match[1] / 10);
+  }
+
+  /**
+   * Date parser function
+   */
+  function parseDate(jgf, match) {
+
+    //Initialize dates container
+    if (typeof jgf.game.dates === 'undefined') {
+      jgf.game.dates = [];
+    }
+
+    //Push date
+    jgf.game.dates.push(match[1] + '-' + match[2] + '-' + match[3]);
+  }
+
+  /**
+   * Result parser function
+   */
+  function parseResult(jgf, match) {
+
+    //Winner color
+    var result = (match[1].toLowerCase() === 'black') ? 'B' : 'W';
+    result += '+';
+
+    //Win condition
+    if (match[2].match(/res/i)) {
+      result += 'R';
+    }
+    else if (match[2].match(/time/i)) {
+      result += 'T';
+    }
+    else {
+      result += match[2];
+    }
+
+    //Set in JGF
+    jgf.game.result = result;
+  }
+
+  /**
+   * Move parser function
+   */
+  function parseMove(jgf, node, match) {
+
+    //Determine player color
+    var color = match[2];
+    if (color === 1) {
+      color = 'B';
+    }
+    else if (color === 2) {
+      color = 'W';
+    }
+    else {
+      return;
+    }
+
+    //Create move container
+    node.move = {};
+
+    //Pass
+    if (false) {
+
+    }
+
+    //Regular move
+    else {
+      node.move[color] = [match[3] * 1, match[4] * 1];
+    }
+  }
+
+  /**
+   * Parser class
+   */
+  var Parser = {
+
+    /**
+     * Parse GIB string into a JGF object or string
+     */
+    parse: function(gib, stringified) {
+
+      //Get new JGF object
+      var jgf = KifuBlank.jgf();
+
+      //Initialize
+      var match;
+      var container = jgf.tree;
+
+      //Create first node for game, which is usually an empty board position, but can
+      //contain comments or board setup instructions, which will be added to the node
+      //later if needed.
+      var node = {root: true};
+      container.push(node);
+
+      //Find player information
+      while ((match = regPlayer.exec(gib))) {
+        parsePlayer(jgf, match);
+      }
+
+      //Find komi
+      if ((match = regKomi.exec(gib))) {
+        parseKomi(jgf, match);
+      }
+
+      //Find game date
+      if ((match = regDate.exec(gib))) {
+        parseDate(jgf, match);
+      }
+
+      //Find game result
+      if ((match = regResultMargin.exec(gib)) || (match = regResultOther.exec(gib))) {
+        parseResult(jgf, match);
+      }
+
+      //Find moves
+      while ((match = regMove.exec(gib))) {
+
+        //Create new node
+        node = {};
+
+        //Parse move
+        parseMove(jgf, node, match);
+
+        //Push node to container
+        container.push(node);
+      }
+
+      //Return stringified
+      if (stringified) {
+        return angular.toJson(jgf);
+      }
+
+      //Return jgf
+      return jgf;
+    }
+  };
+
+  //Return object
+  return Parser;
+}]);
+
+})(window, window.angular);
+
+(function(window, angular, undefined) {'use strict';
+
+/**
+ * Jgf2Sgf :: This is a parser wrapped by the KifuParser which is used to convert fom JGF to SGF
+ */
+
+/**
+ * Module definition and dependencies
+ */
+angular.module('ngGo.Kifu.Parsers.Jgf2Sgf.Service', [
+  'ngGo',
+  'ngGo.Kifu.Blank.Service'
+])
+
+/**
+ * Factory definition
+ */
+.factory('Jgf2Sgf', ['ngGo', 'sgfAliases', 'sgfGames', 'KifuBlank', function(ngGo, sgfAliases, sgfGames, KifuBlank) {
+
+  /**
+   * Flip SGF alias map and create JGF alias map
+   */
+  var jgfAliases = {};
+  for (var sgfProp in sgfAliases) {
+    if (sgfAliases.hasOwnProperty(sgfProp)) {
+      jgfAliases[sgfAliases[sgfProp]] = sgfProp;
+    }
+  }
+
+  /**
+   * Character index of "a"
+   */
+  var aChar = 'a'.charCodeAt(0);
+
+  /**
+   * Helper to convert to SGF coordinates
+   */
+  function convertCoordinates(coords) {
+    return String.fromCharCode(aChar + coords[0]) + String.fromCharCode(aChar + coords[1]);
+  }
+
+  /*****************************************************************************
+   * Conversion helpers
+   ***/
+
+  /**
+   * Helper to escape SGF info
+   */
+  function escapeSgf(text) {
+    if (typeof text === 'string') {
+      return text.replace(/\\/g, '\\\\').replace(/]/g, '\\]');
+    }
+    return text;
+  }
+
+  /**
+   * Helper to write an SGF group
+   */
+  function writeGroup(prop, values, output, escape) {
+    if (values.length) {
+      output.sgf += prop;
+      for (var i = 0; i < values.length; i++) {
+        output.sgf += '[' + (escape ? escapeSgf(values[i]) : values[i]) + ']';
+      }
+    }
+  }
+
+  /**
+   * Move parser
+   */
+  function parseMove(move, output) {
+
+    //Determine and validate color
+    var color = move.B ? 'B' : (move.W ? 'W' : '');
+    if (color === '') {
+      return;
+    }
+
+    //Determine move
+    var coords = (move[color] === 'pass') ? '' : move[color];
+
+    //Append to SGF
+    output.sgf += color + '[' + convertCoordinates(coords) + ']';
+  }
+
+  /**
+   * Setup parser
+   */
+  function parseSetup(setup, output) {
+
+    //Loop colors
+    for (var color in setup) {
+      if (setup.hasOwnProperty(color)) {
+
+        //Convert coordinates
+        for (var i = 0; i < setup[color].length; i++) {
+          setup[color][i] = convertCoordinates(setup[color][i]);
+        }
+
+        //Write as group
+        writeGroup('A' + color, setup[color], output);
+      }
+    }
+  }
+
+  /**
+   * Score parser
+   */
+  function parseScore(score, output) {
+
+    //Loop colors
+    for (var color in score) {
+      if (score.hasOwnProperty(color)) {
+
+        //Convert coordinates
+        for (var i = 0; i < score[color].length; i++) {
+          score[color][i] = convertCoordinates(score[color][i]);
+        }
+
+        //Write as group
+        writeGroup('T' + color, score[color], output);
+      }
+    }
+  }
+
+  /**
+   * Markup parser
+   */
+  function parseMarkup(markup, output) {
+
+    //Loop markup types
+    for (var type in markup) {
+      if (markup.hasOwnProperty(type)) {
+        var i;
+
+        //Label type has the label text appended to the coords
+        if (type === 'label') {
+          for (i = 0; i < markup[type].length; i++) {
+            markup[type][i] = convertCoordinates(markup[type][i]) + ':' + markup[type][i][2];
+          }
+        }
+        else {
+          for (i = 0; i < markup[type].length; i++) {
+            markup[type][i] = convertCoordinates(markup[type][i]);
+          }
+        }
+
+        //Convert type
+        if (typeof jgfAliases[type] !== 'undefined') {
+          type = jgfAliases[type];
+        }
+
+        //Write as group
+        writeGroup(type, markup[type], output);
+      }
+    }
+  }
+
+  /**
+   * Turn parser
+   */
+  function parseTurn(turn, output) {
+    output.sgf += 'PL[' + turn + ']';
+  }
+
+  /**
+   * Comments parser
+   */
+  function parseComments(comments, output) {
+
+    //Determine key
+    var key = (typeof jgfAliases.comments !== 'undefined') ? jgfAliases.comments : 'C';
+
+    //Flatten comment objects
+    var flatComments = [];
+    for (var c = 0; c < comments.length; c++) {
+      if (typeof comments[c] === 'string') {
+        flatComments.push(comments[c]);
+      }
+      else if (comments[c].comment) {
+        flatComments.push(comments[c].comment);
+      }
+    }
+
+    //Write as group
+    writeGroup(key, flatComments, output, true);
+  }
+
+  /**
+   * Node name parser
+   */
+  function parseNodeName(nodeName, output) {
+    var key = (typeof jgfAliases.name !== 'undefined') ? jgfAliases.name : 'N';
+    output.sgf += key + '[' + escapeSgf(nodeName) + ']';
+  }
+
+  /**
+   * Game parser
+   */
+  function parseGame(game) {
+
+    //Loop SGF game definitions
+    for (var i in sgfGames) {
+      if (sgfGames.hasOwnProperty(i) && sgfGames[i] === game) {
+        return i;
+      }
+    }
+
+    //Not found
+    return 0;
+  }
+
+  /**
+   * Application parser
+   */
+  function parseApplication(application) {
+    var parts = application.split(' v');
+    if (parts.length > 1) {
+      return parts[0] + ':' + parts[1];
+    }
+    return application;
+  }
+
+  /**
+   * Player instructions parser
+   */
+  function parsePlayer(player, rootProperties) {
+
+    //Variation handling
+    var st = 0;
+    if (!player.variationMarkup) {
+      st += 2;
+    }
+    if (player.variationSiblings) {
+      st += 1;
+    }
+
+    //Set in root properties
+    rootProperties.ST = st;
+  }
+
+  /**
+   * Board parser
+   */
+  function parseBoard(board, rootProperties) {
+
+    //Both width and height should be given
+    if (board.width && board.height) {
+
+      //Same dimensions?
+      if (board.width === board.height) {
+        rootProperties.SZ = board.width;
+      }
+
+      //Different dimensions are not supported by SGF, but OGS uses the
+      //format w:h, so we will stick with that for anyone who supports it.
+      else {
+        rootProperties.SZ = board.width + ':' + board.height;
+      }
+    }
+
+    //Otherwise, check if only width or height were given at least
+    else if (board.width) {
+      rootProperties.SZ = board.width;
+    }
+    else if (board.height) {
+      rootProperties.SZ = board.height;
+    }
+
+    //Can't determine size
+    else {
+      rootProperties.SZ = '';
+    }
+  }
+
+  /**
+   * Players parser
+   */
+  function parsePlayers(players, rootProperties) {
+
+    //Loop players
+    for (var p = 0; p < players.length; p++) {
+
+      //Validate color
+      if (!players[p].color || (players[p].color !== 'black' && players[p].color !== 'white')) {
+        continue;
+      }
+
+      //Get SGF color
+      var color = (players[p].color === 'black') ? 'B' : 'W';
+
+      //Name given?
+      if (players[p].name) {
+        rootProperties['P' + color] = players[p].name;
+      }
+
+      //Rank given?
+      if (players[p].rank) {
+        rootProperties[color + 'R'] = players[p].rank;
+      }
+
+      //Team given?
+      if (players[p].team) {
+        rootProperties[color + 'T'] = players[p].team;
+      }
+    }
+  }
+
+  /**
+   * Parse function to property mapper
+   */
+  var parsingMap = {
+
+    //Node properties
+    'move': parseMove,
+    'setup': parseSetup,
+    'score': parseScore,
+    'markup': parseMarkup,
+    'turn': parseTurn,
+    'comments': parseComments,
+    'name': parseNodeName,
+
+    //Info properties
+    'record.application': parseApplication,
+    'player': parsePlayer,
+    'board': parseBoard,
+    'game.type': parseGame,
+    'game.players': parsePlayers
+  };
+
+  /*****************************************************************************
+   * Parser functions
+   ***/
+
+  /**
+   * Helper to write a JGF tree to SGF
+   */
+  function writeTree(tree, output) {
+
+    //Loop nodes in the tree
+    for (var i = 0; i < tree.length; i++) {
+      var node = tree[i];
+
+      //Array? That means a variation
+      if (angular.isArray(node)) {
+        for (var j = 0; j < node.length; j++) {
+          output.sgf += '(\n;';
+          writeTree(node[j], output);
+          output.sgf += '\n)';
+        }
+
+        //Continue
+        continue;
+      }
+
+      //Loop node properties
+      for (var key in node) {
+        if (node.hasOwnProperty(key)) {
+
+          //Handler present in parsing map?
+          if (typeof parsingMap[key] !== 'undefined') {
+            parsingMap[key](node[key], output);
+            continue;
+          }
+
+          //Other object, can't handle it
+          if (typeof node[key] === 'object') {
+            continue;
+          }
+
+          //Anything else, append it
+          output.sgf += key + '[' + escapeSgf(node[key]) + ']';
+        }
+      }
+
+      //More to come?
+      if ((i + 1) < tree.length) {
+        output.sgf += '\n;';
+      }
+    }
+  }
+
+  /**
+   * Helper to extract all SGF root properties from a JGF object
+   */
+  function extractRootProperties(jgf, rootProperties, key) {
+
+    //Initialize key
+    if (typeof key === 'undefined') {
+      key = '';
+    }
+
+    //Loop properties of jgf node
+    for (var subKey in jgf) {
+      if (jgf.hasOwnProperty(subKey)) {
+
+        //Skip SGF signature (as we keep our own)
+        if (subKey === 'sgf') {
+          continue;
+        }
+
+        //Build jgf key
+        var jgfKey = (key === '') ? subKey : key + '.' + subKey;
+
+        //If the item is an object, handle separately
+        if (typeof jgf[subKey] === 'object') {
+
+          //Handler for this object present in parsing map?
+          if (typeof parsingMap[jgfKey] !== 'undefined') {
+            parsingMap[jgfKey](jgf[subKey], rootProperties);
+          }
+
+          //Otherwise, just flatten and call this function recursively
+          else {
+            extractRootProperties(jgf[subKey], rootProperties, jgfKey);
+          }
+          continue;
+        }
+
+        //Check if it's a known key, if so, append the value to the root
+        var value;
+        if (typeof jgfAliases[jgfKey] !== 'undefined') {
+
+          //Handler present in parsing map?
+          if (typeof parsingMap[jgfKey] !== 'undefined') {
+            value = parsingMap[jgfKey](jgf[subKey]);
+          }
+          else {
+            value = escapeSgf(jgf[subKey]);
+          }
+
+          //Set in root properties
+          rootProperties[jgfAliases[jgfKey]] = value;
+        }
+      }
+    }
+  }
+
+  /**
+   * Parser class
+   */
+  var Parser = {
+
+    /**
+     * Parse JGF object or string into an SGF string
+     */
+    parse: function(jgf) {
+
+      //String given?
+      if (typeof jgf === 'string') {
+        jgf = angular.fromJson(jgf);
+      }
+
+      //Must have moves tree
+      if (!jgf.tree) {
+        console.error('No moves tree in JGF object');
+        return;
+      }
+
+      //Initialize output (as object, so it remains a reference) and root properties container
+      var output = {sgf: '(\n;'};
+      var root = angular.copy(jgf);
+      var rootProperties = KifuBlank.sgf();
+
+      //The first node of the JGF tree is the root node, and it can contain comments,
+      //board setup parameters, etc. It doesn't contain moves. We handle it separately here
+      //and attach it to the root
+      if (jgf.tree && jgf.tree.length > 0 && jgf.tree[0].root) {
+        root = angular.extend(root, jgf.tree[0]);
+        delete root.root;
+        delete jgf.tree[0];
+      }
+
+      //Set root properties
+      delete root.tree;
+      extractRootProperties(root, rootProperties);
+
+      //Write root properties
+      for (var key in rootProperties) {
+        if (rootProperties[key]) {
+          output.sgf += key + '[' + escapeSgf(rootProperties[key]) + ']';
+        }
+      }
+
+      //Write game tree
+      writeTree(jgf.tree, output);
+
+      //Close SGF and return
+      output.sgf += ')';
+      return output.sgf;
+    }
+  };
+
+  //Return object
+  return Parser;
+}]);
+
+})(window, window.angular);
+
+(function(window, angular, undefined) {'use strict';
+
+/**
+ * Sgf2Jgf :: This is a parser wrapped by the KifuParser which is used to convert fom SGF to JGF
+ */
+
+/**
+ * Module definition and dependencies
+ */
+angular.module('ngGo.Kifu.Parsers.Sgf2Jgf.Service', [
+  'ngGo',
+  'ngGo.Kifu.Blank.Service'
+])
+
+/**
+ * Factory definition
+ */
+.factory('Sgf2Jgf', ['ngGo', 'sgfAliases', 'sgfGames', 'KifuBlank', function(ngGo, sgfAliases, sgfGames, KifuBlank) {
+
+  /**
+   * Regular expressions for SGF data
+   */
+  var regSequence = /\(|\)|(;(\s*[A-Z]+\s*((\[\])|(\[(.|\s)*?([^\\]\])))+)*)/g;
+  var regNode = /[A-Z]+\s*((\[\])|(\[(.|\s)*?([^\\]\])))+/g;
+  var regProperty = /[A-Z]+/;
+  var regValues = /(\[\])|(\[(.|\s)*?([^\\]\]))/g;
+
+  /**
+   * Character index of "a"
+   */
+  var aChar = 'a'.charCodeAt(0);
+
+  /**
+   * Helper to convert SGF coordinates
+   */
+  function convertCoordinates(coords) {
+    return [coords.charCodeAt(0) - aChar, coords.charCodeAt(1) - aChar];
+  }
+
+  /*****************************************************************************
+   * Conversion helpers
+   ***/
+
+  /**
+   * Application parser function (doesn't overwrite existing signature)
+   */
+  function parseApp(jgf, node, key, value) {
+    if (!jgf.record.application) {
+      var app = value[0].split(':');
+      if (app.length > 1) {
+        jgf.record.application = app[0] + ' v' + app[1];
+      }
+      else {
+        jgf.record.application = app[0];
+      }
+    }
+  }
+
+  /**
+   * SGF format parser
+   */
+  function parseSgfFormat() {
+    return;
+  }
+
+  /**
+   * Game type parser function
+   */
+  function parseGame(jgf, node, key, value) {
+    var game = value[0];
+    if (typeof sgfGames[game] !== 'undefined') {
+      jgf.game.type = sgfGames[game];
+    }
+    else {
+      jgf.game.type = value[0];
+    }
+  }
+
+  /**
+   * Move parser function
+   */
+  function parseMove(jgf, node, key, value) {
+
+    //Create move container
+    node.move = {};
+
+    //Pass
+    if (value[0] === '' || (jgf.width <= 19 && value[0] === 'tt')) {
+      node.move[key] = 'pass';
+    }
+
+    //Regular move
+    else {
+      node.move[key] = convertCoordinates(value[0]);
+    }
+  }
+
+  /**
+   * Comment parser function
+   */
+  function parseComment(jgf, node, key, value) {
+
+    //Get key alias
+    if (typeof sgfAliases[key] !== 'undefined') {
+      key = sgfAliases[key];
+    }
+
+    //Set value
+    node[key] = value;
+  }
+
+  /**
+   * Node name parser function
+   */
+  function parseNodeName(jgf, node, key, value) {
+
+    //Get key alias
+    if (typeof sgfAliases[key] !== 'undefined') {
+      key = sgfAliases[key];
+    }
+
+    //Set value
+    node[key] = value[0];
+  }
+
+  /**
+   * Board setup parser function
+   */
+  function parseSetup(jgf, node, key, value) {
+
+    //Initialize setup container on node
+    if (typeof node.setup === 'undefined') {
+      node.setup = {};
+    }
+
+    //Remove "A" from setup key
+    key = key.charAt(1);
+
+    //Initialize setup container of this type
+    if (typeof node.setup[key] === 'undefined') {
+      node.setup[key] = [];
+    }
+
+    //Add values
+    for (var i = 0; i < value.length; i++) {
+      node.setup[key].push(convertCoordinates(value[i]));
+    }
+  }
+
+  /**
+   * Scoring parser function
+   */
+  function parseScore(jgf, node, key, value) {
+
+    //Initialize score container on node
+    if (typeof node.score === 'undefined') {
+      node.score = {
+        B: [],
+        W: []
+      };
+    }
+
+    //Remove "T" from setup key
+    key = key.charAt(1);
+
+    //Add values
+    for (var i = 0; i < value.length; i++) {
+      node.score[key].push(convertCoordinates(value[i]));
+    }
+  }
+
+  /**
+   * Turn parser function
+   */
+  function parseTurn(jgf, node, key, value) {
+    node.turn = value[0];
+  }
+
+  /**
+   * Label parser function
+   */
+  function parseLabel(jgf, node, key, value) {
+
+    //Get key alias
+    if (typeof sgfAliases[key] !== 'undefined') {
+      key = sgfAliases[key];
+    }
+
+    //Initialize markup container on node
+    if (typeof node.markup === 'undefined') {
+      node.markup = {};
+    }
+
+    //Initialize markup container of this type
+    if (typeof node.markup[key] === 'undefined') {
+      node.markup[key] = [];
+    }
+
+    //Add values
+    for (var i = 0; i < value.length; i++) {
+
+      //Split off coordinates and add label contents
+      var coords = convertCoordinates(value[i].substr(0, 2));
+      coords.push(value[i].substr(3));
+
+      //Add to node
+      node.markup[key].push(coords);
+    }
+  }
+
+  /**
+   * Markup parser function
+   */
+  function parseMarkup(jgf, node, key, value) {
+
+    //Get key alias
+    if (typeof sgfAliases[key] !== 'undefined') {
+      key = sgfAliases[key];
+    }
+
+    //Initialize markup container on node
+    if (typeof node.markup === 'undefined') {
+      node.markup = {};
+    }
+
+    //Initialize markup container of this type
+    if (typeof node.markup[key] === 'undefined') {
+      node.markup[key] = [];
+    }
+
+    //Add values
+    for (var i = 0; i < value.length; i++) {
+      node.markup[key].push(convertCoordinates(value[i]));
+    }
+  }
+
+  /**
+   * Size parser function
+   */
+  function parseSize(jgf, node, key, value) {
+
+    //Initialize board container
+    if (typeof jgf.board === 'undefined') {
+      jgf.board = {};
+    }
+
+    //Add size property (can be width:height or just a single size)
+    var size = value[0].split(':');
+    if (size.length > 1) {
+      jgf.board.width = parseInt(size[0]);
+      jgf.board.height = parseInt(size[1]);
+    }
+    else {
+      jgf.board.width = jgf.board.height = parseInt(size[0]);
+    }
+  }
+
+  /**
+   * Date parser function
+   */
+  function parseDate(jgf, node, key, value) {
+
+    //Initialize dates container
+    if (typeof jgf.game.dates === 'undefined') {
+      jgf.game.dates = [];
+    }
+
+    //Explode dates
+    var dates = value[0].split(',');
+    for (var d = 0; d < dates.length; d++) {
+      jgf.game.dates.push(dates[d]);
+    }
+  }
+
+  /**
+   * Komi parser function
+   */
+  function parseKomi(jgf, node, key, value) {
+    jgf.game.komi = parseFloat(value[0]);
+  }
+
+  /**
+   * Variations handling parser function
+   */
+  function parseVariations(jgf, node, key, value) {
+
+    //Initialize display property
+    if (typeof jgf.player === 'undefined') {
+      jgf.player = {};
+    }
+
+    //Initialize variation display settings
+    jgf.player.variationMarkup = false;
+    jgf.player.variationChildren = false;
+    jgf.player.variationSiblings = false;
+
+    //Parse as integer
+    var st = parseInt(value[0]);
+
+    //Determine what we want (see SGF specs for details)
+    switch (st) {
+      case 0:
+        jgf.player.variationMarkup = true;
+        jgf.player.variationChildren = true;
+        break;
+      case 1:
+        jgf.player.variationMarkup = true;
+        jgf.player.variationSiblings = true;
+        break;
+      case 2:
+        jgf.player.variationChildren = true;
+        break;
+      case 3:
+        jgf.player.variationSiblings = true;
+        break;
+    }
+  }
+
+  /**
+   * Player info parser function
+   */
+  function parsePlayer(jgf, node, key, value) {
+
+    //Initialize players container
+    if (typeof jgf.game.players === 'undefined') {
+      jgf.game.players = [];
+    }
+
+    //Determine player color
+    var color = (key === 'PB' || key === 'BT' || key === 'BR') ? 'black' : 'white';
+
+    //Get key alias
+    if (typeof sgfAliases[key] !== 'undefined') {
+      key = sgfAliases[key];
+    }
+
+    //Check if player of this color already exists
+    for (var p = 0; p < jgf.game.players.length; p++) {
+      if (jgf.game.players[p].color === color) {
+        jgf.game.players[p][key] = value[0];
+        return;
+      }
+    }
+
+    //Player of this color not found, initialize
+    var player = {color: color};
+    player[key] = value[0];
+    jgf.game.players.push(player);
+  }
+
+  /**
+   * Parsing function to property mapper
+   */
+  var parsingMap = {
+
+    //Application, game type, board size, komi, date
+    'AP': parseApp,
+    'FF': parseSgfFormat,
+    'GM': parseGame,
+    'SZ': parseSize,
+    'KM': parseKomi,
+    'DT': parseDate,
+
+    //Variations handling
+    'ST': parseVariations,
+
+    //Player info handling
+    'PB': parsePlayer,
+    'PW': parsePlayer,
+    'BT': parsePlayer,
+    'WT': parsePlayer,
+    'BR': parsePlayer,
+    'WR': parsePlayer,
+
+    //Moves
+    'B': parseMove,
+    'W': parseMove,
+
+    //Node annotation
+    'C': parseComment,
+    'N': parseNodeName,
+
+    //Board setup
+    'AB': parseSetup,
+    'AW': parseSetup,
+    'AE': parseSetup,
+    'PL': parseTurn,
+    'TW': parseScore,
+    'TB': parseScore,
+
+    //Markup
+    'CR': parseMarkup,
+    'SQ': parseMarkup,
+    'TR': parseMarkup,
+    'MA': parseMarkup,
+    'SL': parseMarkup,
+    'LB': parseLabel
+  };
+
+  /**
+   * These properties need a node object
+   */
+  var needsNode = [
+    'B', 'W', 'C', 'N', 'AB', 'AW', 'AE', 'PL', 'LB', 'CR', 'SQ', 'TR', 'MA', 'SL', 'TW', 'TB'
+  ];
+
+  /*****************************************************************************
+   * Parser helpers
+   ***/
+
+  /**
+   * Set info in the JGF tree at a certain position
+   */
+  function setInfo(jgf, position, value) {
+
+    //Position given must be an array
+    if (typeof position !== 'object') {
+      return;
+    }
+
+    //Initialize node to attach value to
+    var node = jgf;
+    var key;
+
+    //Loop the position
+    for (var p = 0; p < position.length; p++) {
+
+      //Get key
+      key = position[p];
+
+      //Last key reached? Done
+      if ((p + 1) === position.length) {
+        break;
+      }
+
+      //Create container if not set
+      if (typeof node[key] !== 'object') {
+        node[key] = {};
+      }
+
+      //Move up in tree
+      node = node[key];
+    }
+
+    //Set value
+    node[key] = value;
+  }
+
+  /**
+   * Parser class
+   */
+  var Parser = {
+
+    /**
+     * Parse SGF string into a JGF object or string
+     */
+    parse: function(sgf, stringified) {
+
+      //Get new JGF object (with SGF node as a base)
+      var jgf = KifuBlank.jgf({record: {sgf: {}}});
+
+      //Initialize
+      var stack = [];
+      var container = jgf.tree;
+
+      //Create first node for game, which is usually an empty board position, but can
+      //contain comments or board setup instructions, which will be added to the node
+      //later if needed.
+      var node = {root: true};
+      container.push(node);
+
+      //Find sequence of elements
+      var sequence = sgf.match(regSequence);
+
+      //Loop sequence items
+      for (var i = 0; i < sequence.length; i++) {
+
+        //Push stack if new variation found
+        if (sequence[i] === '(') {
+
+          //First encounter, this defines the main tree branch, so skip
+          if (i === 0 || i === '0') {
+            continue;
+          }
+
+          //Push the current container to the stack
+          stack.push(container);
+
+          //Create variation container if it doesn't exist yet
+          if (!angular.isArray(container[container.length - 1])) {
+            container.push([]);
+          }
+
+          //Use variation container
+          container = container[container.length - 1];
+
+          //Now create moves container
+          container.push([]);
+          container = container[container.length - 1];
+          continue;
+        }
+
+        //Grab last container from stack if end of variation reached
+        else if (sequence[i] === ')') {
+          if (stack.length) {
+            container = stack.pop();
+          }
+          continue;
+        }
+
+        //Make array of properties within this sequence
+        var properties = sequence[i].match(regNode) || [];
+
+        //Loop them
+        for (var j = 0; j < properties.length; j++) {
+
+          //Get property's key and separate values
+          var key = regProperty.exec(properties[j])[0].toUpperCase();
+          var values = properties[j].match(regValues);
+
+          //Remove additional braces [ and ]
+          for (var k = 0; k < values.length; k++) {
+            values[k] = values[k].substring(1, values[k].length - 1).replace(/\\(?!\\)/g, '');
+          }
+
+          //SGF parser present for this key? Call it, and we're done
+          if (typeof parsingMap[key] !== 'undefined') {
+
+            //Does this type of property need a node?
+            if (needsNode.indexOf(key) !== -1) {
+
+              //If no node object present, create a new node
+              //For moves, always a new node is created
+              if (!node || key === 'B' || key === 'W') {
+                node = {};
+                container.push(node);
+              }
+            }
+
+            //Apply parsing function on node
+            parsingMap[key](jgf, node, key, values);
+            continue;
+          }
+
+          //No SGF parser present, we continue with regular property handling
+
+          //If there is only one value, simplify array
+          if (values.length === 1) {
+            values = values[0];
+          }
+
+          //SGF alias known? Then this is an info element and we handle it accordingly
+          if (typeof sgfAliases[key] !== 'undefined') {
+
+            //The position in the JGF object is represented by dot separated strings
+            //in the sgfAliases array. Split the position and use the setInfo helper
+            //to set the info on the JGF object
+            setInfo(jgf, sgfAliases[key].split('.'), values);
+            continue;
+          }
+
+          //No SGF alias present either, just append the data
+
+          //Save in node
+          if (node) {
+            node[key] = values;
+          }
+
+          //Save in root
+          else {
+            jgf[key] = values;
+          }
+        }
+
+        //Reset node, unless this was the root node
+        if (node && !node.root) {
+          node = null;
+        }
+      }
+
+      //Return stringified
+      if (stringified) {
+        return angular.toJson(jgf);
+      }
+
+      //Return jgf
+      return jgf;
+    }
+  };
+
+  //Return object
+  return Parser;
 }]);
 
 })(window, window.angular);
