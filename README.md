@@ -6,9 +6,7 @@
 [![codacy](https://img.shields.io/codacy/7d72527f76b44256971ece497488fc80.svg)](https://www.codacy.com/app/adambuczynski/ngGo)
 
 ## About
-### This project is forked from [[adambuczynski/ngGo](https://github.com/adambuczynski/ngGo)
-
-### ](https://github.com/adambuczynski/ngGo)
+### This project is forked from [adambuczynski/ngGo](https://github.com/adambuczynski/ngGo)
 
 ngGo is an Angular.JS library for reading, parsing, displaying, editing and replaying Go game records.
 
