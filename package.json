@@ -1,7 +1,7 @@
 {
   "name": "ng-go",
   "description": "An Angular.js library for reading, parsing, displaying, editing and replaying Go game records",
-  "version": "1.3.1.1",
+  "version": "1.3.1.2",
   "homepage": "https://github.com/cookwu/ngGo",
   "author": {
     "name": "Cook Wu",

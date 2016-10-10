@@ -39,9 +39,9 @@ angular.module('ngGo.Game.Path.Service', [
 
     //Different child variation chosen? Remember
     if (i > 0) {
-      this.path[this.move] = 1;
       this.branches++;
     }
+    this.path[this.move] = i;
 
     //Increment move
     this.move++;
@@ -58,14 +58,16 @@ angular.module('ngGo.Game.Path.Service', [
       return;
     }
 
+    //Decrement move
+    this.move--;
+
     //Delete path choice
     if (this.path[this.move]) {
       delete this.path[this.move];
       this.branches--;
     }
 
-    //Decrement move
-    this.move--;
+
     return this;
   };
 
